@@ -31,8 +31,7 @@ html, body {
         hsla(213, 76%, 40%, 1), /* Deep Blue */
         hsla(203, 78%, 33%, 1), /* Medium Blue */
         hsla(205, 90%, 19%, 1)); /* Dark Blue */
-    background-size: 800% 800%;
-    animation: gradientMove 50s ease infinite;
+    background-size: 150% 150%;
 }
 
 
