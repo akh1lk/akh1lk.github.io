@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Akhil's Portfolio Website</title>
+    <title>Akhil's Portfolio</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
@@ -52,6 +52,8 @@
     <header class="text-center py-5 text-white">
         <div class="container">
             <h1 class="display-4">Hi, I'm Akhil!</h1>
+            <p class="display-4"> <em id="typewriter"></em>
+            </p>
             <p class="lead"><em>CS Major @ Cornell 🌽 ML/AI & Backend Software Engineer 🤖</em></p>
             <!-- Resume Button -->
             <a href="https://drive.google.com/file/d/1QBVicKpUpdYiWJYMLSJPqr9RFxV9O1_j/view?usp=sharing" 
@@ -69,7 +71,7 @@
             <!-- Profile Picture -->
             <img src="images/Akhil-ProfilePic.jpg" alt="Akhil Kagithapu" class="img-fluid rounded-circle mb-4" style="width: 200px; height: 200px; object-fit: cover;">
             <p>
-                I'm <strong>Akhil Kagithapu</strong>, a Cornell CS student interested in AI, Machine Learning, and Software Development (especially Backend). 
+                I'm <strong>Akhil Kagithapu</strong>, a Cornell student majoring in CS, minoring in Math & Finance. I'm interested in AI, Machine Learning, Quantitative Finance, and Software Development (especially Backend). 
                 I currently work with Python, Java, JS and other associated backend/AI frameworks & languages such as PyTorch, LangChain, Flask, SQLAlchemy, and Node.js.
             </p>
         </div>
@@ -145,10 +147,45 @@
             <a href="https://www.tiktok.com/@akh2l" target="_blank" class="text-decoration-none text-white">All rights reserved.</a>
         </p>
     </footer>
-
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+
+    <!-- TypeWriter Animation -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const phrases = ["Machine Learning", "Artificial Intelligence", "Software Development", "Quantitative Finance"];
+            const typewriterElement = document.getElementById("typewriter");
+            let currentPhraseIndex = 0;
+            let currentText = "";
+            let deleting = false;
+    
+            function typeEffect() {
+                const currentPhrase = phrases[currentPhraseIndex];
+                const cursor = "_"; // Underscore to simulate the cursor
+    
+                if (!deleting && currentText.length < currentPhrase.length) {
+                    currentText += currentPhrase.charAt(currentText.length);
+                } else if (deleting && currentText.length > 0) {
+                    currentText = currentText.slice(0, -1);
+                } else if (!deleting && currentText.length === currentPhrase.length) {
+                    deleting = true;
+                    setTimeout(typeEffect, 2000); // Pause before deleting
+                    return;
+                } else if (deleting && currentText.length === 0) {
+                    deleting = false;
+                    currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+                }
+    
+                // Add a space before the word and underscore immediately after the text
+                typewriterElement.textContent = " " + currentText + cursor;
+                setTimeout(typeEffect, deleting ? 100 : 100); // Faster deleting, slower typing
+            }
+    
+            typeEffect();
+        });
+    </script>
 </body>
 </html>
