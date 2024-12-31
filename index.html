@@ -52,15 +52,16 @@
     <header class="text-center py-5 text-white">
         <div class="container">
             <h1 class="display-4">Hi, I'm Akhil!</h1>
-            <p class="display-4"> <em id="typewriter"></em>
             </p>
             <p class="lead"><em>CS Major @ Cornell 🌽 ML/AI & Backend Software Engineer 🤖</em></p>
+            
             <!-- Resume Button -->
-            <a href="https://drive.google.com/file/d/1QBVicKpUpdYiWJYMLSJPqr9RFxV9O1_j/view?usp=sharing" 
+            <a href="https://drive.google.com/file/d/1305cs8KDhArCnZPmz_ZA9Cc6Dh56LvwL/view?usp=sharing" 
             target="_blank" 
             class="btn btn-primary btn-lg mt-3">
-            View Resume
+            Resume
             </a>
+            
         </div>
     </header>
 
@@ -69,29 +70,46 @@
         <div class="container text-center">
             <h2 class="text-center mb-4">About Me</h2>
             <!-- Profile Picture -->
-            <img src="images/Akhil-ProfilePic.jpg" alt="Akhil Kagithapu" class="img-fluid rounded-circle mb-4" style="width: 200px; height: 200px; object-fit: cover;">
+            <img src="images/Akhil-ProfilePic.jpg" alt="Akhil Kagithapu" class="img-fluid rounded-circle mb-4" style="width: 300px; height: 300px; object-fit: cover;">
+            <p> <em id="typewriter"></em></p>
             <p>
-                I'm <strong>Akhil Kagithapu</strong>, a Cornell student majoring in CS, minoring in Math & Finance. I'm interested in AI, Machine Learning, Quantitative Finance, and Software Development (especially Backend). 
-                I currently work with Python, Java, JS and other associated backend/AI frameworks & languages such as PyTorch, LangChain, Flask, SQLAlchemy, and Node.js.
+                I've grown up a coder, building cryptographic algorithms in Python & banking applications in Java.
             </p>
+            <p>However, I'm currently diving into:</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Artificial Intelligence:</strong> Utilizing PyTorch, LangChain, and HuggingFace Transformers for a Cornell Energy Department AI chatbot.
+                </li>
+                <li class="list-group-item">
+                    <strong>C++:</strong> Optimization, networking, and Operating System features.
+                </li>
+                <li class="list-group-item">
+                    <strong>Cross-Platform Apps:</strong> Developing with React Native, Express.js, and the MERN Stack.
+                </li>
+            </ul>
         </div>
     </section>
 
     <!-- Projects Section -->
     <section id="projects" class="py-5 bg-light">
         <div class="container">
-            <h2 class="text-center mb-4">Projects</h2>
+            <h2 class="text-center mb-4">Projects 💻</h2>
             <div class="row g-4">
                 <!-- Project 1 -->
                 <div class="col-md-6">
                     <div class="card shadow">
                         <div class="image-container">
-                            <img src="images/LockedIn-ProjectImage.jpg" class="card-img-top" alt="LockedIn logo">
+                            <img src="images/LockedIn-ProjectImage.png" class="card-img-top" alt="LockedIn logo">
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title"><a href="https://github.com/akh1lk/LockedIn" target="_blank">Professional Networking App - LockedIn</a></h5>
+                            <h5 class="card-title"><a href="https://github.com/akh1lk/LockedIn" target="_blank">Swipe-Based Professional Networking - LockedIn</a></h5>
                             <p class="card-text">
-                                "The Tinder for LinkedIn, swipe to network!" Created for Cornell AppDev's Hack Challenge. Backend built with <strong>Python, Flask, SQLAlchemy</strong>, deployed with <strong>Docker</strong> and <strong>Google Cloud Platform</strong>.
+                                <em>Head Backend Developer</em> <br> <br>
+                                
+                                An award-winning app that makes professional networking effortless - Cornell AppDev Hack Challenge FA24. <br><br>
+                                
+                                
+                                <strong>Backend</strong>: <em>Python, Flask, SQLAlchemy, Docker, Google Cloud Platform Compute Engine</em>.
                             </p>
                         </div>
                     </div>
@@ -105,7 +123,11 @@
                         <div class="card-body">
                             <h5 class="card-title"><a href="https://youtu.be/fqq5berJyJs" target="_blank">Intelligent Image Selection Application</a></h5>
                             <p class="card-text">
-                                Developed a <strong>Java Swing GUI</strong> featuring Dijkstra's Algorithm and Priority Queues for efficient pathfinding in the Intelligent Scissors Model.
+                                <em>Solo Developer</em> <br> <br>
+
+                                Java GUI that features Dijkstra's Algorithm and Priority Queues for efficient pathfinding in the revered 'Intelligent Scissors' model. <br> <br>
+                                
+                                <strong>Tools</strong>: <em>Java, Swing</em>.
                             </p>
                         </div>
                     </div>
@@ -124,15 +146,15 @@
                         <div class="card-body">
                             <h5><strong>Languages:</strong></h5>
                             <p>
-                                Python (Advanced), Java (Advanced), SQL (Proficient), Javascript/HTML/CSS (Proficient)
+                                Python (Advanced), Java (Advanced), Javascript (Advanced), SQL (Proficient), HTML/CSS (Advanced)
                             </p>
                             <h5><strong>Frameworks:</strong></h5>
                             <p>
-                                AWS Bedrock & S3, SQLAlchemy (ORM), scikit-learn, Swing, pandas, NumPy, Matplotlib, NLTK
+                                AWS Bedrock & S3, SQLAlchemy (ORM), LangChain, PyTorch, scikit-learn, MERN stack (MongoDB, Express.js, React & React Native, & Node.js), Swing, pandas, NumPy, NLTK
                             </p>
                             <h5><strong>Developer Tools:</strong></h5>
                             <p>
-                                Git, JUnit, Docker, Postman, Google Cloud Compute Engine, Jupyter Notebook, VSCode, IntelliJ
+                                Git, JUnit, Docker, Postman, Google Cloud Compute Engine, Google Colab, Jupyter Notebook, VSCode, IntelliJ
                             </p>
                         </div>
                     </div>
@@ -164,7 +186,7 @@
     
             function typeEffect() {
                 const currentPhrase = phrases[currentPhraseIndex];
-                const cursor = "_"; // Underscore to simulate the cursor
+                const cursor = "_";
     
                 if (!deleting && currentText.length < currentPhrase.length) {
                     currentText += currentPhrase.charAt(currentText.length);
@@ -180,10 +202,9 @@
                 }
     
                 // Add a space before the word and underscore immediately after the text
-                typewriterElement.textContent = " " + currentText + cursor;
+                typewriterElement.textContent = "Interested in " + currentText + cursor;
                 setTimeout(typeEffect, deleting ? 100 : 100); // Faster deleting, slower typing
             }
-    
             typeEffect();
         });
     </script>

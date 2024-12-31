@@ -9,15 +9,26 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    min-height: 100%; /* Ensures the gradient spans content larger than the viewport */
+    min-height: 100%; 
 }
 
-/* Gradient Animation from mshr.app */
-
-
-/* styles.css */
-
-/* styles.css */
+@keyframes gradientSubtleAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 20% 50%;
+    }
+    50% {
+        background-position: 40% 50%;
+    }
+    75% {
+        background-position: 20% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 
 .animated-background {
     position: absolute;
@@ -27,11 +38,12 @@ html, body {
     height: 100%;
     z-index: -1;
     background: linear-gradient(270deg, 
-        hsla(201, 0%, 0%, 1), /* Black */
-        hsla(213, 76%, 40%, 1), /* Deep Blue */
-        hsla(203, 78%, 33%, 1), /* Medium Blue */
-        hsla(205, 90%, 19%, 1)); /* Dark Blue */
-    background-size: 150% 150%;
+        hsla(201, 0%, 0%, 1), 
+        hsla(213, 76%, 40%, 1), 
+        hsla(203, 78%, 33%, 1), 
+        hsla(205, 90%, 19%, 1));
+    background-size: 200% 200%;
+    animation: gradientSubtleAnimation 8s ease-in-out infinite;
 }
 
 
@@ -97,7 +109,7 @@ header h1 {
 }
 
 header p {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: lighter;
     max-width: 800px;
     margin: 0 auto;
@@ -128,6 +140,34 @@ header p {
     color: #d6eaff;
 }
 
+
+
+/* Custom styles for the list group items */
+.list-group-item {
+    background-color: rgba(255, 255, 255, 0.8); 
+    border-left: 5px solid #007bff;
+    margin-bottom: 10px; 
+    border-radius: 2rem !important; /* Rounded corners */
+    transition: transform 0.2s, background-color 0.2s; 
+}
+
+/* Hover effect */
+.list-group-item:hover {
+    background-color: rgba(0, 123, 255, 0.1); 
+    color: #ffffff; 
+    transform: scale(1.02);
+}
+
+.list-group-item strong {
+    color: #007bff; 
+    font-weight: 600;
+}
+
+#typewriter {
+    font-weight: bolder;
+    font-size: 1.3rem;
+}
+
 #about img:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.5);
@@ -136,7 +176,7 @@ header p {
 /* Projects Section */
 #projects {
     padding: 60px 20px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgb(255, 255, 255, 1) !important;
     backdrop-filter: blur(5px);
     border-radius: 10px;
     margin: 40px auto;
@@ -146,7 +186,7 @@ header p {
 
 #projects h2 {
     font-size: 2.5rem;
-    color: #00aaff;
+    color: #0072b0;
     margin-bottom: 30px;
     text-align: center;
 }
