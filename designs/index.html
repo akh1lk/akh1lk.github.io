@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akhil Kagithapu — 10 Portfolio Directions</title>
+<style>
+  :root{
+    --ground:#f6f6f4;
+    --surface:#fff;
+    --ink:#17191d;
+    --muted:#666c76;
+    --faint:#949aa4;
+    --hair:#e3e3df;
+    --accent:#1d4ed8;
+    --shadow:0 1px 2px rgba(16,18,24,.05),0 14px 36px -22px rgba(16,18,24,.3);
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",SFMono-Regular,Menlo,"PT Mono",monospace;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{--ground:#0f1115;--surface:#171a1f;--ink:#e8eaee;--muted:#949aa6;--faint:#6a7079;
+      --hair:#252932;--accent:#8aa2ff;--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 44px -24px rgba(0,0,0,.9)}
+  }
+  :root[data-theme="dark"]{--ground:#0f1115;--surface:#171a1f;--ink:#e8eaee;--muted:#949aa6;--faint:#6a7079;
+    --hair:#252932;--accent:#8aa2ff;--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 44px -24px rgba(0,0,0,.9)}
+  :root[data-theme="light"]{--ground:#f6f6f4;--surface:#fff;--ink:#17191d;--muted:#666c76;--faint:#949aa4;
+    --hair:#e3e3df;--accent:#1d4ed8;--shadow:0 1px 2px rgba(16,18,24,.05),0 14px 36px -22px rgba(16,18,24,.3)}
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.6;
+    -webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 26px 90px}
+
+  header{padding:58px 0 40px;border-bottom:1px solid var(--hair);margin-bottom:34px}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  h1{font-size:clamp(28px,4.4vw,42px);line-height:1.06;letter-spacing:-.034em;margin:0 0 14px;font-weight:600;max-width:24ch;text-wrap:balance}
+  header p{color:var(--muted);max-width:66ch;margin:0 0 10px;font-size:15.5px}
+  header p strong{color:var(--ink);font-weight:500}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:20px}
+  .card{background:var(--surface);border:1px solid var(--hair);border-radius:12px;overflow:hidden;display:flex;
+    flex-direction:column;transition:transform .18s ease,box-shadow .18s ease,border-color .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+
+  /* abstract palette previews — each mirrors its design's real tokens */
+  .thumb{aspect-ratio:16/9;position:relative;overflow:hidden;border-bottom:1px solid var(--hair);padding:14px;
+    display:flex;flex-direction:column;gap:7px;justify-content:flex-end}
+  .thumb .b{height:7px;border-radius:2px}
+  .thumb .t{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;position:absolute;top:12px;left:14px}
+
+  .t1{background:#0a0b0d}.t1 .t{color:#f3a847}
+  .t2{background:#f2f1ee}.t2 .t{color:#e03127}
+  .t3{background:#06080c;background-image:linear-gradient(#121b26 1px,transparent 1px),linear-gradient(90deg,#121b26 1px,transparent 1px);background-size:18px 18px}.t3 .t{color:#4ad6e8}
+  .t4{background:#07090c}.t4 .t{color:#ffb224}
+  .t5{background:#e9ecf7;background-image:radial-gradient(#cdd3e8 1.2px,transparent 1.2px);background-size:11px 11px}.t5 .t{color:#101014}
+  .t6{background:linear-gradient(160deg,#060a14,#121a33)}.t6 .t{color:#7adbe8}
+  .t7{background:linear-gradient(170deg,#0f7a7a,#0a5c60)}.t7 .t{color:#36ff8a}
+  .t8{background:#f7f7f5}.t8 .t{color:#1f3fd4}
+  .t9{background:#040507}.t9 .t{color:#8fd8ff}
+  .t10{background:#f3f3f0}.t10 .t{color:#ad3a22}
+
+  .meat{padding:17px 19px 19px;display:flex;flex-direction:column;flex:1}
+  .meat .no{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--faint);margin-bottom:6px}
+  .meat h2{margin:0 0 7px;font-size:17px;letter-spacing:-.018em;font-weight:600}
+  .meat p{margin:0 0 14px;color:var(--muted);font-size:13.5px;line-height:1.52}
+  .meat .tags{margin-top:auto;display:flex;flex-wrap:wrap;gap:5px}
+  .meat .tags span{font-family:var(--mono);font-size:10px;letter-spacing:.06em;border:1px solid var(--hair);
+    border-radius:4px;padding:1px 7px;color:var(--faint)}
+  .meat .open{margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+
+  .note{margin-top:38px;border:1px solid var(--hair);border-radius:11px;background:var(--surface);padding:20px 22px}
+  .note h3{margin:0 0 9px;font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .note p{margin:0 0 9px;color:var(--muted);font-size:13.5px}
+  .note p:last-child{margin-bottom:0}
+  .note code{font-family:var(--mono);font-size:12px;background:var(--ground);border:1px solid var(--hair);border-radius:4px;padding:1px 5px}
+  footer{margin-top:34px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Design round · October 2026</p>
+    <h1>Ten portfolio directions for Akhil Kagithapu</h1>
+    <p>Ten independent visual identities, each a complete single-page portfolio built from the same real content: <strong>five roles, nine projects, four awards, and the full toolkit</strong>. Nothing is carried over from the previous site — every palette, typeface pairing, and layout is specific to its direction.</p>
+    <p>Open any of them, then tell me which one to build out properly in Next.js.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="01-terminal.html">
+      <div class="thumb t1">
+        <span class="t">01 / tmux</span>
+        <span class="b" style="background:#f3a847;width:42%"></span>
+        <span class="b" style="background:#64b6ac;width:68%"></span>
+        <span class="b" style="background:#1e242b;width:88%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">01</div>
+        <h2>Terminal multiplexer</h2>
+        <p>A tmux session as a portfolio: bordered panes with corner labels, a line-number gutter, an htop-style skills meter, and a real status bar. Press 1–3 to switch buffers.</p>
+        <div class="tags"><span>Amber on ink</span><span>SF Mono</span><span>Keyboard-driven</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="02-swiss.html">
+      <div class="thumb t2">
+        <span class="t">02 / grid</span>
+        <span class="b" style="background:#101010;width:92%;height:12px"></span>
+        <span class="b" style="background:#e03127;width:56%"></span>
+        <span class="b" style="background:#c9c8c3;width:74%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">02</div>
+        <h2>Swiss typographic grid</h2>
+        <p>International-style editorial restraint: a visible six-column grid, the surname set in signal red at 200px, hairline rules, and figures treated as headlines.</p>
+        <div class="tags"><span>Signal red</span><span>Helvetica Neue</span><span>Print logic</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="03-kernel.html">
+      <div class="thumb t3">
+        <span class="t">03 / kernel</span>
+        <span class="b" style="background:#4ad6e8;width:50%"></span>
+        <span class="b" style="background:#ff5f91;width:30%"></span>
+        <span class="b" style="background:#b8e986;width:66%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">03</div>
+        <h2>GPU kernel blueprint</h2>
+        <p>Technical dark mode built around the PoPE work: an animated attention-tiling diagram, metric footers on every build, an execution trace for roles, and a register-file skills panel.</p>
+        <div class="tags"><span>Cyan / magenta</span><span>Grid ground</span><span>Animated tiles</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="04-desk.html">
+      <div class="thumb t4">
+        <span class="t">04 / desk</span>
+        <span class="b" style="background:#ffb224;width:38%"></span>
+        <span class="b" style="background:#35d07f;width:62%"></span>
+        <span class="b" style="background:#59a9ff;width:48%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">04</div>
+        <h2>Trading terminal</h2>
+        <p>Dense information design in the style of a market terminal: command bar, scrolling ticker of real metrics, tabular positions and builds, and a canvas area chart.</p>
+        <div class="tags"><span>Amber on navy</span><span>Tabular nums</span><span>Canvas chart</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="05-sticker.html">
+      <div class="thumb t5">
+        <span class="t">05 / sticker</span>
+        <span class="b" style="background:#ffd93d;width:70%;height:12px"></span>
+        <span class="b" style="background:#ff6a4d;width:44%"></span>
+        <span class="b" style="background:#2b45f0;width:58%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">05</div>
+        <h2>Neo-brutalist sticker wall</h2>
+        <p>Loud and friendly: 3px borders, hard offset shadows, a rotated sticker strip for interests, highlighter-marked metrics, and one enormous yellow hero.</p>
+        <div class="tags"><span>Electric blue</span><span>Hard shadows</span><span>Hover straighten</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="06-aurora.html">
+      <div class="thumb t6">
+        <span class="t">06 / aurora</span>
+        <span class="b" style="background:#7adbe8;width:64%"></span>
+        <span class="b" style="background:#8b7dff;width:46%"></span>
+        <span class="b" style="background:rgba(255,255,255,.14);width:80%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">06</div>
+        <h2>Aurora &amp; frosted glass</h2>
+        <p>Ithaca at night: a canvas aurora with three drifting curtains and a starfield behind blurred glass panels, gradient-clipped figures, and a quiet centred column.</p>
+        <div class="tags"><span>Ice / iris</span><span>Avenir Next</span><span>Canvas ambient</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="07-y2k.html">
+      <div class="thumb t7">
+        <span class="t">07 / akhil.os</span>
+        <span class="b" style="background:#c9c9c2;width:78%;height:11px"></span>
+        <span class="b" style="background:#ff2fa0;width:40%"></span>
+        <span class="b" style="background:#2ee6ff;width:56%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">07</div>
+        <h2>AKHIL.OS — Y2K desktop</h2>
+        <p>A late-90s operating system you can actually use: draggable bevelled windows, a taskbar that tracks focus, a Projects folder of icons, and a chrome-shadowed display face.</p>
+        <div class="tags"><span>Teal desktop</span><span>Draggable windows</span><span>Phosphate</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="08-command.html">
+      <div class="thumb t8">
+        <span class="t">08 / ⌘K</span>
+        <span class="b" style="background:#15171c;width:52%"></span>
+        <span class="b" style="background:#1f3fd4;width:34%"></span>
+        <span class="b" style="background:#e4e4e0;width:76%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">08</div>
+        <h2>Keyboard-first minimal</h2>
+        <p>Precision over decoration: a 720px column, hairline-separated rows, and a working ⌘K command palette with fuzzy matching that jumps to sections or opens any repo. Light and dark.</p>
+        <div class="tags"><span>Cobalt accent</span><span>⌘K palette</span><span>Both themes</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="09-pointcloud.html">
+      <div class="thumb t9">
+        <span class="t">09 / splat</span>
+        <span class="b" style="background:#8fd8ff;width:58%"></span>
+        <span class="b" style="background:#ff8a52;width:28%"></span>
+        <span class="b" style="background:#1a1d22;width:84%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">09</div>
+        <h2>Point cloud, cinematic</h2>
+        <p>A nod to Torque: your initials rendered as a depth-sorted rotating point cloud, Didot display type, 2.39:1 letterboxed project frames with generated splat fields, and credit-roll roles.</p>
+        <div class="tags"><span>Didot</span><span>3D canvas</span><span>Scroll reveals</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+
+    <a class="card" href="10-datasheet.html">
+      <div class="thumb t10">
+        <span class="t">10 / AKH-1K</span>
+        <span class="b" style="background:#191c1e;width:88%"></span>
+        <span class="b" style="background:#ad3a22;width:36%"></span>
+        <span class="b" style="background:#2a4e86;width:54%"></span>
+      </div>
+      <div class="meat">
+        <div class="no">10</div>
+        <h2>Component datasheet</h2>
+        <p>You as a part: numbered sections, a 16-pin functional diagram mapping the toolkit, operating-history and characteristics tables, functional blocks, and ordering information.</p>
+        <div class="tags"><span>Oxide red</span><span>PT Mono tables</span><span>Pinout figure</span></div>
+        <div class="open">Open →</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="note">
+    <h3>Notes on the build</h3>
+    <p>Every page is a single self-contained HTML file — no frameworks, no external requests, no font CDNs. Typography uses system faces that render natively on macOS (SF Mono, Helvetica Neue, Avenir Next, Didot, Phosphate, PT Mono) with fallbacks.</p>
+    <p>All ten are responsive, keyboard-accessible, and respect <code>prefers-reduced-motion</code>. Files live in <code>designs/</code>; open one directly in a browser or serve the folder.</p>
+  </div>
+
+  <footer>Akhil Kagithapu · Ithaca, NY · ten directions, one content model</footer>
+</div>
+
+</body>
+</html>
