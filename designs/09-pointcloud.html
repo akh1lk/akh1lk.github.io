@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akhil Kagithapu — Reconstruction</title>
+<style>
+  :root{
+    --black:#040507;
+    --slab:#0a0b0e;
+    --slab-2:#0e1014;
+    --hair:rgba(255,255,255,.1);
+    --fg:#f3f1ee;
+    --dim:#9b9a97;
+    --faint:#6a6966;
+    --splat:#8fd8ff;
+    --warm:#ff8a52;
+    --display:Didot,"Big Caslon","Hoefler Text","Playfair Display",Georgia,serif;
+    --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--black);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:1px solid var(--splat);outline-offset:4px}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px 110px}
+  .mono{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+
+  /* hero: full-bleed cloud */
+  .stage{position:relative;height:92vh;min-height:520px;margin-bottom:8vh}
+  #cloud{position:absolute;inset:0;width:100%;height:100%}
+  .stage .over{position:absolute;inset:auto 0 7% 0;padding:0 26px;pointer-events:none}
+  .stage .over .in{max-width:1080px;margin:0 auto}
+  .stage h1{font-family:var(--display);font-size:clamp(34px,5.6vw,68px);line-height:1.02;letter-spacing:-.02em;
+    font-weight:400;margin:14px 0 0;max-width:19ch;text-wrap:balance}
+  .stage h1 em{font-style:italic;color:var(--splat)}
+  .stage .over p{max-width:46ch;color:var(--dim);margin:18px 0 0;font-size:16px}
+  .slate{position:absolute;top:26px;left:26px;right:26px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .slate .push{margin-left:auto}
+  .slate a{pointer-events:auto}
+  .slate a:hover{color:var(--splat)}
+
+  /* letterboxed section frames */
+  section{padding-top:78px}
+  .shead{display:flex;align-items:baseline;gap:18px;border-top:1px solid var(--hair);padding-top:14px;margin-bottom:30px}
+  .shead h2{font-family:var(--display);margin:0;font-size:clamp(23px,3.2vw,34px);letter-spacing:-.02em;font-weight:400}
+  .shead .ct{margin-left:auto}
+
+  /* reveal on scroll */
+  .rv{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* credits-style experience */
+  .credits{display:grid;gap:0}
+  .cred{display:grid;grid-template-columns:minmax(0,1fr) 2px minmax(0,1.5fr);gap:0;align-items:stretch}
+  @media(max-width:800px){.cred{grid-template-columns:1fr;gap:8px}.cred .mid{display:none}}
+  .cred .lhs{padding:24px 30px 24px 0;text-align:right}
+  .cred .mid{background:var(--hair);position:relative}
+  .cred .mid::before{content:"";position:absolute;top:26px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--splat)}
+  .cred .rhs{padding:24px 0 24px 30px;border-bottom:1px solid rgba(255,255,255,.055)}
+  .cred:last-child .rhs{border-bottom:0}
+  @media(max-width:800px){.cred .lhs{text-align:left;padding:18px 0 0}.cred .rhs{padding:0 0 20px}}
+  .cred h3{font-family:var(--display);margin:0;font-size:25px;letter-spacing:-.015em;font-weight:400}
+  .cred .rl{color:var(--dim);font-size:13.5px;margin-top:5px}
+  .cred .yr{margin-top:9px}
+  .cred ul{margin:0;padding:0;list-style:none}
+  .cred li{color:#b5b3af;font-size:14.5px;line-height:1.56;margin-bottom:8px;padding-left:0}
+  .cred li:last-child{margin-bottom:0}
+  .cred li strong{color:var(--fg);font-weight:500}
+
+  /* film strip projects */
+  .reel{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px}
+  .cell{display:block;border:1px solid var(--hair);background:var(--slab);overflow:hidden;transition:border-color .3s,transform .3s}
+  .cell:hover{border-color:rgba(143,216,255,.45);transform:translateY(-3px)}
+  .cell .frame{aspect-ratio:2.39/1;position:relative;background:var(--slab-2);overflow:hidden;border-bottom:1px solid var(--hair)}
+  .cell canvas{position:absolute;inset:0;width:100%;height:100%}
+  .cell .fl{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:rgba(255,255,255,.5)}
+  .cell .fr{position:absolute;right:12px;bottom:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--warm)}
+  .cell .meat{padding:20px 22px 22px}
+  .cell h3{font-family:var(--display);margin:0 0 7px;font-size:25px;letter-spacing:-.015em;font-weight:400}
+  .cell p{margin:0 0 15px;color:var(--dim);font-size:14.5px}
+  .cell .figs{display:flex;gap:22px;flex-wrap:wrap;border-top:1px solid var(--hair);padding-top:14px}
+  .cell .figs .v{font-family:var(--display);font-size:24px;color:var(--splat);letter-spacing:-.02em}
+  .cell .figs .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+  .cell .st{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:14px;letter-spacing:.08em}
+
+  /* pull quote / stats */
+  .pull{font-family:var(--display);font-size:clamp(24px,3.6vw,40px);line-height:1.2;letter-spacing:-.02em;
+    max-width:30ch;margin:0;text-wrap:balance}
+  .pull em{font-style:italic;color:var(--splat)}
+  .statline{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px;margin-top:44px;
+    border-top:1px solid var(--hair);padding-top:26px}
+  .statline .v{font-family:var(--display);font-size:clamp(32px,4.4vw,46px);line-height:1;letter-spacing:-.03em}
+  .statline p{margin:10px 0 0;color:var(--dim);font-size:13.5px;line-height:1.5}
+
+  /* toolkit */
+  .tk{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:30px}
+  .tk h4{margin:0 0 12px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
+    border-bottom:1px solid var(--hair);padding-bottom:9px}
+  .tk ul{margin:0;padding:0;list-style:none;color:#b7b5b1;font-size:14px;line-height:1.95}
+
+  /* end card */
+  .endcard{margin-top:92px;border:1px solid var(--hair);padding:54px 40px;text-align:center;background:
+    radial-gradient(70% 120% at 50% 0%,rgba(143,216,255,.08),transparent 70%),var(--slab)}
+  .endcard h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);letter-spacing:-.025em;margin:0 0 12px;font-weight:400}
+  .endcard p{color:var(--dim);margin:0 auto 28px;max-width:44ch}
+  .endcard .row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .endcard .row a{border:1px solid var(--hair);padding:10px 20px;font-size:13.5px;letter-spacing:.02em}
+  .endcard .row a:hover{border-color:var(--splat);color:var(--splat)}
+  footer{margin-top:40px;display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <canvas id="cloud" aria-label="A rotating point cloud spelling Akhil's initials" role="img"></canvas>
+  <div class="slate">
+    <span class="mono">Akhil Kagithapu</span>
+    <span class="mono">Cornell CS '28</span>
+    <span class="push mono"><a href="mailto:kagithapu.akhil@gmail.com">Contact</a></span>
+    <span class="mono"><a href="https://github.com/akh1lk">GitHub</a></span>
+  </div>
+  <div class="over">
+    <div class="in">
+      <p class="mono">ML engineer · systems · quant-curious</p>
+      <h1>I reconstruct things from <em>first principles</em> — then ship them.</h1>
+      <p>GPU kernels, a tokenizer-free LLM rebuilt from scratch, agentic systems, and the products wrapped around them. Incoming ML engineering intern at Meta.</p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="shead rv"><h2>Experience</h2><span class="ct mono">Five roles · 2024–2026</span></div>
+    <div class="credits">
+      <div class="cred rv">
+        <div class="lhs"><h3>Meta</h3><div class="rl">ML Engineering Intern</div><div class="yr mono">May – Aug 2026 · Menlo Park</div></div>
+        <div class="mid"></div>
+        <div class="rhs"><ul>
+          <li>Improving on-device ML models that predict near-term app re-engagement, enabling resource-aware prefetching.</li>
+          <li>Built a model-agnostic evaluation harness and benchmarked three agentic model-optimization tools across <strong>70+ runs</strong>.</li>
+          <li>Cut one tool's wall time by <strong>43%</strong> through refined experiment generation and feedback loops.</li>
+        </ul></div>
+      </div>
+      <div class="cred rv">
+        <div class="lhs"><h3>Hack4Impact</h3><div class="rl">Technical Lead, Medic</div><div class="yr mono">Feb 2025 – present · Cornell</div></div>
+        <div class="mid"></div>
+        <div class="rhs"><ul>
+          <li>Lead <strong>eight engineers</strong> building the public impact dashboard for Medic's Community Health Toolkit, which supports <strong>182,000+ health workers</strong> across <strong>24 countries</strong>.</li>
+          <li>Own architecture and delivery across React, TypeScript, Express, PostgreSQL, Prisma, and Docker.</li>
+        </ul></div>
+      </div>
+      <div class="cred rv">
+        <div class="lhs"><h3>Penske Truck Leasing</h3><div class="rl">Software Engineering Intern</div><div class="yr mono">Jun – Aug 2025 · Reading, PA</div></div>
+        <div class="mid"></div>
+        <div class="rhs"><ul>
+          <li>Built access-separated RAG via Azure AI Foundry for contract Q&amp;A, slated for <strong>20,000+</strong> clients and employees.</li>
+          <li>Created a quality-control app streamlining inspections for <strong>50,000 trucks</strong>, estimated to save <strong>6,000+ hours a year</strong>.</li>
+          <li>Developed microservices with Native Federation and Spring Boot, deployed via CI/CD on OpenShift.</li>
+        </ul></div>
+      </div>
+      <div class="cred rv">
+        <div class="lhs"><h3>Engineers for a Sustainable World</h3><div class="rl">Technical Project Lead, AI/ML</div><div class="yr mono">Oct 2024 – Dec 2025 · Cornell</div></div>
+        <div class="mid"></div>
+        <div class="rhs"><ul>
+          <li>Led <strong>five engineers</strong> building an agentic RAG chatbot to simplify anomaly reporting for Cornell's energy meters.</li>
+          <li>Cut lookup time from over five minutes to <strong>under one</strong> using AWS Bedrock and LangChain on live anomaly data.</li>
+          <li>Integrated real-time fault and consumption data from <strong>300+ energy panels</strong> into graph and heatmap visualizations.</li>
+        </ul></div>
+      </div>
+      <div class="cred rv">
+        <div class="lhs"><h3>RapStudy</h3><div class="rl">Software Engineering Intern</div><div class="yr mono">Spring – Summer 2025 · Remote</div></div>
+        <div class="mid"></div>
+        <div class="rhs"><ul><li>Full-stack development and auth integration for an EdTech startup turning music into learning tools.</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead rv"><h2>Selected work</h2><span class="ct mono">Six of nine</span></div>
+    <div class="reel">
+      <a class="cell rv" href="https://github.com/ashtonchew/traceback">
+        <div class="frame"><canvas class="mini" data-seed="3" width="480" height="201"></canvas><span class="fl">Traceback</span><span class="fr">2026</span></div>
+        <div class="meat">
+          <h3>Traceback</h3>
+          <p>Automated red-teaming that surfaces the reward hacks RL graders miss: snapshot a vulnerable agent trajectory, then launch parallel attacker sandboxes against it.</p>
+          <div class="figs">
+            <div><div class="v">14</div><div class="l">grader-breaking hacks</div></div>
+            <div><div class="v">+3%</div><div class="l">Qwen3-4B after SFT</div></div>
+          </div>
+          <div class="st">Python · RL · SFT · Terminal Bench — Best Product Design, YC Frontier</div>
+        </div>
+      </a>
+      <a class="cell rv" href="https://github.com/laerdon/blt-replication">
+        <div class="frame"><canvas class="mini" data-seed="7" width="480" height="201"></canvas><span class="fl">Byte Latent Transformer</span><span class="fr">2026</span></div>
+        <div class="meat">
+          <h3>Byte Latent Transformer</h3>
+          <p>Meta FAIR's tokenizer-free LLM rebuilt from scratch — byte local encoder and decoder, patch-side latent transformer, RoPE with grouped-query attention, SwiGLU.</p>
+          <div class="figs">
+            <div><div class="v">1.21</div><div class="l">val BPB vs GPT-2's 1.22</div></div>
+            <div><div class="v">1.7B</div><div class="l">tokens at 86M params</div></div>
+          </div>
+          <div class="st">PyTorch · xformers · torchrun · FineWeb-Edu</div>
+        </div>
+      </a>
+      <a class="cell rv" href="https://github.com/akh1lk/pope-fused-triton">
+        <div class="frame"><canvas class="mini" data-seed="11" width="480" height="201"></canvas><span class="fl">Fused PoPE Kernel</span><span class="fr">2026</span></div>
+        <div class="meat">
+          <h3>Fused PoPE Attention</h3>
+          <p>FlashAttention-style tiled attention written in Triton across three kernels — RoPE, PoPE, and a fused variant that folds softplus and rotation into the inner loop.</p>
+          <div class="figs">
+            <div><div class="v">−15%</div><div class="l">latency vs cartesian</div></div>
+            <div><div class="v">4K</div><div class="l">seq length on T4</div></div>
+          </div>
+          <div class="st">Triton · CUDA · PyTorch</div>
+        </div>
+      </a>
+      <a class="cell rv" href="https://github.com/akh1lk/torque">
+        <div class="frame"><canvas class="mini" data-seed="5" width="480" height="201"></canvas><span class="fl">Torque</span><span class="fr">2025</span></div>
+        <div class="meat">
+          <h3>Torque</h3>
+          <p>A full pipeline turning multi-view images into photorealistic 3D models with SAM2 and Gaussian Splatting — built for VFX creators, including me.</p>
+          <div class="figs">
+            <div><div class="v">−35%</div><div class="l">reconstruction time</div></div>
+            <div><div class="v">SIMD</div><div class="l">C++ mask processing</div></div>
+          </div>
+          <div class="st">React Three Fiber · FastAPI · OpenMP · Pybind11 · AWS</div>
+        </div>
+      </a>
+      <a class="cell rv" href="https://github.com/ezrakoreen/imc-prosperity-4">
+        <div class="frame"><canvas class="mini" data-seed="13" width="480" height="201"></canvas><span class="fl">IMC Prosperity 4</span><span class="fr">2026</span></div>
+        <div class="meat">
+          <h3>IMC Prosperity 4</h3>
+          <p>Mean-reversion, market-making, and derivatives strategies across simulated markets, with backtesting infrastructure written in Rust.</p>
+          <div class="figs">
+            <div><div class="v">#216</div><div class="l">of 18,800+ teams</div></div>
+            <div><div class="v">#37</div><div class="l">worldwide, options</div></div>
+          </div>
+          <div class="st">Rust · Python · Quant · Backtesting</div>
+        </div>
+      </a>
+      <a class="cell rv" href="https://github.com/khuhub/brandr">
+        <div class="frame"><canvas class="mini" data-seed="17" width="480" height="201"></canvas><span class="fl">Brandr</span><span class="fr">2026</span></div>
+        <div class="meat">
+          <h3>Brandr</h3>
+          <p>Browser agents that move through TikTok like people do — opening profiles, expanding captions, screenshotting posts — then score content against campaign rules.</p>
+          <div class="figs">
+            <div><div class="v">Agentic</div><div class="l">compliance audit</div></div>
+            <div><div class="v">Graph</div><div class="l">creator discovery</div></div>
+          </div>
+          <div class="st">Next.js · Convex · Browser Use · Gemini 2.5 Flash — YC × Browser Use</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead rv"><h2>Where it adds up</h2></div>
+    <p class="pull rv">Cornell CS with a business minor, a <em>3.96</em> GPA, and a habit of shipping at hackathon speed — then going back and making it fast.</p>
+    <div class="statline rv">
+      <div><div class="v">$6,000</div><p>Best Product Design and 6th place at the YC Frontier RSI/RL Hackathon.</p></div>
+      <div><div class="v">182K+</div><p>Community health workers served by the Medic dashboard, in 24 countries.</p></div>
+      <div><div class="v">43%</div><p>Wall-time cut on a model-optimization tool at Meta.</p></div>
+      <div><div class="v">May '28</div><p>Expected graduation. Open to ML, systems, and quant roles.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead rv"><h2>Toolkit</h2></div>
+    <div class="tk rv">
+      <div><h4>Languages</h4><ul><li>Python</li><li>C++</li><li>Rust</li><li>Go</li><li>Java</li><li>TypeScript</li><li>OCaml</li><li>SQL</li><li>RISC-V</li></ul></div>
+      <div><h4>ML · Systems</h4><ul><li>PyTorch</li><li>Triton</li><li>CUDA</li><li>scikit-learn</li><li>OpenMP · SIMD</li><li>Docker</li><li>AWS · GCP · Azure</li><li>LangChain · Bedrock</li></ul></div>
+      <div><h4>Product</h4><ul><li>React</li><li>Next.js</li><li>Express</li><li>Spring Boot</li><li>Flask · FastAPI</li><li>PostgreSQL · Prisma</li><li>Convex</li><li>React Three Fiber</li></ul></div>
+      <div><h4>Off-screen</h4><ul><li>Tennis</li><li>Squash</li><li>VFX illusions in digital media</li><li>The spiciest food I can find</li></ul></div>
+    </div>
+  </section>
+
+  <div class="endcard rv">
+    <h2>Let's reconstruct something</h2>
+    <p>Open to ML engineering, systems, and quant internships — and always happy to talk kernels, reward hacking, or splats.</p>
+    <div class="row">
+      <a href="mailto:kagithapu.akhil@gmail.com">kagithapu.akhil@gmail.com</a>
+      <a href="https://github.com/akh1lk">GitHub</a>
+      <a href="https://linkedin.com/in/akhil-kagithapu">LinkedIn</a>
+      <a href="https://drive.google.com/file/d/1Xj8y1tuMrDWrCt6oiF7NgFf34yKu3gAj/view?usp=sharing">Résumé</a>
+    </div>
+  </div>
+  <footer>
+    <span class="mono">Akhil Kagithapu · Ithaca, NY</span>
+    <span class="mono">610-823-6700</span>
+    <span class="mono">MMXXVI</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- hero: volumetric "AK" point cloud ---------- */
+  const cv = document.getElementById('cloud');
+  const ctx = cv.getContext('2d');
+  let W, H, DPR, pts = [], dust = [];
+
+  function samplePoints(w, h){
+    // rasterize the initials offscreen, then sample a point per lit pixel
+    const off = document.createElement('canvas');
+    const ow = Math.round(Math.min(900, Math.max(300, w * 0.72))), oh = Math.round(ow * 0.46);
+    off.width = ow; off.height = oh;
+    const o = off.getContext('2d');
+    o.fillStyle = '#fff';
+    o.font = '700 ' + Math.round(oh * 1.02) + 'px "Helvetica Neue", Helvetica, Arial, sans-serif';
+    o.textAlign = 'center'; o.textBaseline = 'middle';
+    o.fillText('AK', ow / 2, oh * 0.54);
+    const data = o.getImageData(0, 0, ow, oh).data;
+
+    const out = [], step = 3;
+    let n = 0;
+    for (let y = 0; y < oh; y += step){
+      for (let x = 0; x < ow; x += step){
+        if (data[(y * ow + x) * 4 + 3] > 128){
+          n++;
+          // deterministic pseudo-jitter so it looks scanned, not gridded
+          const j1 = ((n * 9301 + 49297) % 233280) / 233280 - 0.5;
+          const j2 = ((n * 4211 + 1733) % 134456) / 134456 - 0.5;
+          const j3 = ((n * 7177 + 911) % 99991) / 99991 - 0.5;
+          out.push({
+            x: (x - ow / 2 + j1 * step * 1.6),
+            y: (y - oh / 2 + j2 * step * 1.6),
+            z: j3 * oh * 0.17,
+            s: 0.7 + Math.abs(j1) * 1.6
+          });
+        }
+      }
+    }
+    return out;
+  }
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    pts = samplePoints(W, H);
+    dust = Array.from({length: 170}, (_, i) => ({
+      x: ((i * 7919) % 1000) / 1000 * W,
+      y: ((i * 104729) % 1000) / 1000 * H,
+      z: ((i * 31337) % 1000) / 1000,
+      p: (i % 29) / 29
+    }));
+  }
+
+  function frame(t){
+    ctx.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H * 0.36;
+
+    // ambient dust
+    for (const d of dust){
+      const drift = reduce ? 0 : Math.sin(t * 0.0003 + d.p * 6.28) * 12;
+      ctx.beginPath();
+      ctx.arc(d.x + drift, d.y, 0.6 + d.z * 0.9, 0, 6.283);
+      ctx.fillStyle = 'rgba(190,205,220,' + (0.05 + d.z * 0.1).toFixed(3) + ')';
+      ctx.fill();
+    }
+
+    const ang = reduce ? -0.35 : Math.sin(t * 0.00017) * 0.62;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    const tilt = 0.12;
+
+    // depth-sort so near points draw last and read brighter
+    const proj = [];
+    for (const p of pts){
+      const rx = p.x * ca + p.z * sa;
+      const rz = -p.x * sa + p.z * ca;
+      const ry = p.y + rz * tilt;
+      const f = 900 / (900 + rz);
+      proj.push({ x: cx + rx * f, y: cy + ry * f, f, s: p.s * f, rz });
+    }
+    proj.sort((a, b) => a.rz - b.rz);
+
+    for (const q of proj){
+      const a = Math.min(0.95, 0.22 + q.f * 0.62);
+      ctx.beginPath();
+      ctx.arc(q.x, q.y, Math.max(0.4, q.s), 0, 6.283);
+      // nearer points shift warm, far points stay ice-blue — reads as depth
+      ctx.fillStyle = q.f > 1.02
+        ? 'rgba(255,180,140,' + a.toFixed(3) + ')'
+        : 'rgba(150,215,255,' + a.toFixed(3) + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  addEventListener('resize', resize);
+  if (reduce) frame(0); else requestAnimationFrame(frame);
+
+  /* ---------- project thumbnails: static splat fields ---------- */
+  document.querySelectorAll('canvas.mini').forEach(c => {
+    const g = c.getContext('2d');
+    const w = c.width, h = c.height;
+    let seed = +c.dataset.seed || 1;
+    const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+    g.fillStyle = '#0c0e12'; g.fillRect(0, 0, w, h);
+    // faint horizon grid
+    g.strokeStyle = 'rgba(255,255,255,.05)';
+    for (let i = 1; i < 7; i++){
+      g.beginPath(); g.moveTo(0, h * i / 7); g.lineTo(w, h * i / 7); g.stroke();
+    }
+    for (let i = 0; i < 620; i++){
+      const a = rnd() * 6.283, r = Math.pow(rnd(), 0.55);
+      const x = w / 2 + Math.cos(a) * r * w * 0.46;
+      const y = h / 2 + Math.sin(a) * r * h * 0.44 * (0.5 + rnd() * 0.7);
+      const near = rnd();
+      g.beginPath(); g.arc(x, y, 0.5 + near * 1.7, 0, 6.283);
+      g.fillStyle = near > 0.88
+        ? 'rgba(255,138,82,' + (0.3 + near * 0.5).toFixed(2) + ')'
+        : 'rgba(143,216,255,' + (0.1 + near * 0.42).toFixed(2) + ')';
+      g.fill();
+    }
+  });
+
+  /* ---------- scroll reveals ---------- */
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '-40px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach((el, i) => {
+    el.style.transitionDelay = (Math.min(i, 4) * 55) + 'ms';
+    io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>

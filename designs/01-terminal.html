@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>akhil@cornell — tmux</title>
+<style>
+  :root{
+    --ink:#0a0b0d;
+    --pane:#101317;
+    --pane-2:#0d1013;
+    --line:#1e242b;
+    --fg:#d6d2c8;
+    --dim:#7d8792;
+    --amber:#f3a847;
+    --teal:#64b6ac;
+    --rose:#e0697a;
+    --mono:"SF Mono",SFMono-Regular,Menlo,Monaco,"PT Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink);
+    color:var(--fg);
+    font:13px/1.65 var(--mono);
+    padding:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--teal);text-decoration:none;border-bottom:1px solid #2e4a47}
+  a:hover{color:var(--amber);border-color:var(--amber)}
+  a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+  .screen{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:10px;min-height:calc(100vh - 28px)}
+  .panes{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;flex:1}
+  @media(max-width:860px){.panes{grid-template-columns:1fr}}
+
+  .pane{
+    border:1px solid var(--line);
+    background:var(--pane);
+    position:relative;
+    padding:18px 18px 16px;
+    min-width:0;
+  }
+  .pane.active{border-color:#3a4752}
+  .pane > .label{
+    position:absolute;top:-8px;left:12px;
+    background:var(--pane);padding:0 7px;
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  }
+  .pane.active > .label{color:var(--amber)}
+  .stack{display:flex;flex-direction:column;gap:10px;min-width:0}
+
+  /* buffer with line gutter */
+  .buf{display:grid;grid-template-columns:2.4em 1fr;gap:0 14px;align-items:stretch}
+  .gut{color:#394350;text-align:right;user-select:none;font-size:11.5px;
+    display:flex;flex-direction:column;justify-content:space-between;padding:2px 0 6px}
+  .gut span{display:block;line-height:1}
+  .body{min-width:0}
+
+  h1{
+    font:400 clamp(26px,5.2vw,40px)/1.05 var(--mono);
+    margin:0 0 2px;letter-spacing:-.03em;color:#f4f1ea;
+  }
+  h1 em{font-style:normal;color:var(--amber)}
+  .sub{color:var(--dim);margin:0 0 14px}
+  p{margin:0 0 11px;max-width:62ch}
+  .cursor{display:inline-block;width:.55em;height:1.05em;background:var(--amber);vertical-align:-.17em;animation:blink 1.1s steps(1,end) infinite}
+  @keyframes blink{50%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.cursor{animation:none}}
+
+  .kv{display:grid;grid-template-columns:max-content 1fr;gap:2px 16px;margin:0}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0}
+
+  /* tab strip */
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin:-4px -18px 16px;padding:0 10px}
+  .tabs button{
+    appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+    color:var(--dim);font:inherit;padding:7px 11px;cursor:pointer;
+  }
+  .tabs button[aria-selected="true"]{color:var(--amber);border-bottom-color:var(--amber)}
+  .tabs button:hover{color:var(--fg)}
+  .tabs button:focus-visible{outline:1px solid var(--teal);outline-offset:-1px}
+  .tabs .n{color:#4a5461;margin-right:6px}
+  [role=tabpanel][hidden]{display:none}
+
+  .entry{padding:11px 0;border-top:1px dashed #1c2228}
+  .entry:first-child{border-top:0;padding-top:0}
+  .entry h3{margin:0;font-size:13px;font-weight:400;color:#f1eee7}
+  .entry h3 .at{color:var(--dim)}
+  .meta{color:#5f6a76;font-size:11.5px;margin:1px 0 6px}
+  ul{margin:0;padding-left:1.15em;list-style:none}
+  li{position:relative;margin-bottom:4px;color:#c3bfb6}
+  li::before{content:"›";position:absolute;left:-1.05em;color:var(--teal)}
+  .tag{color:var(--dim)}
+  .num{color:var(--amber);font-variant-numeric:tabular-nums}
+
+  .bars{display:grid;gap:7px}
+  .bar{display:grid;grid-template-columns:8.5em 1fr;gap:12px;align-items:center}
+  .bar .t{color:var(--dim);font-size:11.5px}
+  .bar .track{height:9px;background:#161b21;border:1px solid #20262d;position:relative}
+  .bar .fill{position:absolute;inset:1px auto 1px 1px;background:
+    repeating-linear-gradient(90deg,var(--teal) 0 3px,transparent 3px 5px)}
+  .bar.hot .fill{background:repeating-linear-gradient(90deg,var(--amber) 0 3px,transparent 3px 5px)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chips span{border:1px solid #232a31;padding:1px 7px;color:#9aa4ae;font-size:11.5px}
+
+  .status{
+    display:flex;gap:0;align-items:stretch;border:1px solid var(--line);background:var(--pane-2);
+    font-size:11.5px;overflow-x:auto;white-space:nowrap;
+  }
+  .status .seg{padding:5px 11px;border-right:1px solid var(--line);color:var(--dim)}
+  .status .seg.lit{background:var(--amber);color:#14110b}
+  .status .spacer{flex:1;border-right:0}
+  .status .right{border-right:0;border-left:1px solid var(--line);color:#6d7783}
+
+  .prompt{color:var(--dim);margin-top:12px}
+  .prompt b{color:var(--teal);font-weight:400}
+  kbd{border:1px solid #2a323a;padding:0 4px;color:#aab3bc;font:inherit;font-size:11px}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="panes">
+    <section class="pane active">
+      <span class="label">akhil.md</span>
+      <div class="buf">
+        <div class="gut" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span></div>
+        <div class="body">
+          <h1>Akhil <em>Kagithapu</em><span class="cursor" aria-hidden="true"></span></h1>
+          <p class="sub"># ML engineer · systems · quant-curious</p>
+          <p>Philly-born CS student at Cornell. I build things that ship — GPU kernels, tokenizer-free LLMs, agentic systems, and the full stack underneath them.</p>
+          <p>Incoming ML engineering intern at Meta. Currently leading 8 engineers on a public health dashboard that serves 182K+ community health workers.</p>
+          <dl class="kv">
+            <dt>school</dt><dd>Cornell University, B.S. CS + Business minor</dd>
+            <dt>gpa</dt><dd><span class="num">3.96</span> · expected May 2028</dd>
+            <dt>where</dt><dd>Ithaca, NY</dd>
+            <dt>mail</dt><dd><a href="mailto:kagithapu.akhil@gmail.com">kagithapu.akhil@gmail.com</a></dd>
+            <dt>git</dt><dd><a href="https://github.com/akh1lk">github.com/akh1lk</a></dd>
+            <dt>in</dt><dd><a href="https://linkedin.com/in/akhil-kagithapu">akhil-kagithapu</a></dd>
+            <dt>tel</dt><dd>610-823-6700</dd>
+          </dl>
+          <p class="prompt"><b>$</b> cat interests.txt<br />tennis · squash · VFX illusions in digital media · the spiciest food I can find</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="pane">
+        <span class="label">log</span>
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button role="tab" id="t-work" aria-controls="p-work" aria-selected="true"><span class="n">1</span>work</button>
+          <button role="tab" id="t-proj" aria-controls="p-proj" aria-selected="false"><span class="n">2</span>projects</button>
+          <button role="tab" id="t-win" aria-controls="p-win" aria-selected="false"><span class="n">3</span>wins</button>
+        </div>
+
+        <div role="tabpanel" id="p-work" aria-labelledby="t-work">
+          <div class="entry">
+            <h3>Machine Learning Engineering Intern <span class="at">@ Meta</span></h3>
+            <p class="meta">Menlo Park, CA · May 2026 – Aug 2026</p>
+            <ul>
+              <li>On-device models predicting near-term app re-engagement for resource-aware prefetching</li>
+              <li>Benchmarked 3 agentic model-optimization tools across <span class="num">70+</span> runs on a model-agnostic harness</li>
+              <li>Cut one tool's wall time <span class="num">43%</span> via refined experiment generation</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Technical Lead <span class="at">@ Hack4Impact Cornell</span></h3>
+            <p class="meta">Medic · Feb 2025 – present</p>
+            <ul>
+              <li>Lead 8 engineers on the impact dashboard for Medic's Community Health Toolkit — <span class="num">182K+</span> health workers, 24 countries</li>
+              <li>Own architecture across React, TypeScript, Express, PostgreSQL, Prisma, Docker</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Software Engineering Intern <span class="at">@ Penske Truck Leasing</span></h3>
+            <p class="meta">Reading, PA · Jun 2025 – Aug 2025</p>
+            <ul>
+              <li>Access-separated RAG on Azure AI Foundry for contract Q&amp;A — <span class="num">20K+</span> clients and employees</li>
+              <li>QC inspection app for <span class="num">50K</span> trucks, est. <span class="num">6K+</span> hours/year saved</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Technical Project Lead <span class="at">@ Engineers for a Sustainable World</span></h3>
+            <p class="meta">Ithaca, NY · Oct 2024 – Dec 2025</p>
+            <ul>
+              <li>Led 5 engineers on an agentic RAG chatbot for Cornell's energy-meter anomalies</li>
+              <li>Lookup time 5+ min → under <span class="num">1</span> min with AWS Bedrock + LangChain</li>
+              <li>Live data from <span class="num">300+</span> panels into graphs and heatmaps</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Software Engineering Intern <span class="at">@ RapStudy</span></h3>
+            <p class="meta">Remote · Spring – Summer 2025</p>
+            <ul><li>Full-stack and auth for an EdTech startup turning music into learning tools</li></ul>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="p-proj" aria-labelledby="t-proj" hidden>
+          <div class="entry">
+            <h3>Traceback <span class="at">— automated red-teaming for RL graders</span></h3>
+            <p class="meta">2026 · Python, RL, SFT, Qwen3-4B, Terminal Bench</p>
+            <ul>
+              <li>Snapshots vulnerable agent trajectories, then fans out parallel attacker sandboxes</li>
+              <li><span class="num">14</span> grader-breaking reward hacks across 10 Terminal Bench tasks</li>
+              <li>SFT on the resulting dataset: <span class="num">+3%</span> for Qwen3-4B on held-out tasks</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Byte Latent Transformer <span class="at">— tokenizer-free LLM, from scratch</span></h3>
+            <p class="meta">2026 · PyTorch, xformers, torchrun, FineWeb-Edu</p>
+            <ul>
+              <li>Byte local encoder/decoder, patch-side latent transformer, RoPE + GQA, SwiGLU</li>
+              <li>Matched a GPT-2 BPE baseline: <span class="num">1.21</span> vs 1.22 val BPB at ~86M params on 1.7B tokens</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Fused PoPE Attention Kernel <span class="at">— Triton</span></h3>
+            <p class="meta">2026 · Triton, CUDA, PyTorch</p>
+            <ul>
+              <li>FlashAttention-style tiling; 3 kernels for RoPE, PoPE, fused PoPE</li>
+              <li><span class="num">15%</span> lower latency than Cartesian PoPE via in-kernel softplus &amp; rotation</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <h3>Cursor Escalate <span class="at">— cost-aware model ladder</span></h3>
+            <p class="meta">2026 · TypeScript, Cursor SDK, Next.js</p>
+            <ul><li>Starts cheap, grades against a frozen rubric, escalates only when scores plateau twice</li></ul>
+          </div>
+          <div class="entry">
+            <h3>Torque <span class="at">— image-to-3D for VFX creators</span></h3>
+            <p class="meta">2025 · SAM2, Gaussian Splatting, C++/OpenMP, AWS</p>
+            <ul><li><span class="num">35%</span> faster reconstruction; SIMD mask processing via Pybind11, SQS job queues</li></ul>
+          </div>
+          <div class="entry">
+            <h3>Brandr · Vocera · LockedIn</h3>
+            <p class="meta">2024–2026 · hackathon builds</p>
+            <ul>
+              <li>Browser agents auditing TikTok creators for brand compliance</li>
+              <li>Anti-deepfake voice auth, verification under <span class="num">3s</span></li>
+              <li>"Tinder for LinkedIn" — matching algorithm, GCP, Docker</li>
+            </ul>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="p-win" aria-labelledby="t-win" hidden>
+          <div class="entry">
+            <h3>YC Frontier RSI/RL Hackathon</h3>
+            <p class="meta">Best Product Design · 6th place · $6,000</p>
+          </div>
+          <div class="entry">
+            <h3>IMC Prosperity 4</h3>
+            <p class="meta">#216 of 18,800+ teams globally · #37 worldwide in the options round</p>
+          </div>
+          <div class="entry">
+            <h3>Cursor × a16z Hackathon</h3>
+            <p class="meta">Cursor Escalate</p>
+          </div>
+          <div class="entry">
+            <h3>CS 4782 Intro to Deep Learning</h3>
+            <p class="meta">Funniest Poster — the BLT replication</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="pane">
+        <span class="label">htop — skills</span>
+        <div class="bars">
+          <div class="bar hot"><span class="t">python</span><span class="track"><span class="fill" style="right:6%"></span></span></div>
+          <div class="bar hot"><span class="t">c++ / cuda</span><span class="track"><span class="fill" style="right:22%"></span></span></div>
+          <div class="bar"><span class="t">pytorch</span><span class="track"><span class="fill" style="right:12%"></span></span></div>
+          <div class="bar"><span class="t">typescript</span><span class="track"><span class="fill" style="right:18%"></span></span></div>
+          <div class="bar"><span class="t">rust / go</span><span class="track"><span class="fill" style="right:38%"></span></span></div>
+          <div class="bar"><span class="t">ocaml / risc-v</span><span class="track"><span class="fill" style="right:48%"></span></span></div>
+        </div>
+        <p class="prompt" style="margin-bottom:6px"><b>$</b> ls toolchain/</p>
+        <div class="chips">
+          <span>Triton</span><span>xformers</span><span>OpenMP</span><span>SIMD</span><span>Docker</span><span>AWS</span><span>GCP</span><span>Azure AI Foundry</span><span>LangChain</span><span>Spring Boot</span><span>FastAPI</span><span>PostgreSQL</span><span>Prisma</span><span>Convex</span>
+        </div>
+        <p class="prompt">tab with <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> · <a href="https://drive.google.com/file/d/1Xj8y1tuMrDWrCt6oiF7NgFf34yKu3gAj/view?usp=sharing">open résumé</a></p>
+      </section>
+    </div>
+  </div>
+
+  <div class="status">
+    <span class="seg lit">akhil@cornell</span>
+    <span class="seg">0:work*</span>
+    <span class="seg">1:projects</span>
+    <span class="seg">2:wins</span>
+    <span class="seg spacer"></span>
+    <span class="seg right">ithaca, ny · utf-8 · main</span>
+  </div>
+</div>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll('[role=tab]'));
+  const segs = Array.from(document.querySelectorAll('.status .seg')).filter(s => /^\d:/.test(s.textContent));
+  function select(i){
+    tabs.forEach((t, j) => {
+      const on = i === j;
+      t.setAttribute('aria-selected', String(on));
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      if (segs[j]) segs[j].textContent = segs[j].textContent.replace('*','') + (on ? '*' : '');
+    });
+  }
+  tabs.forEach((t, i) => t.addEventListener('click', () => select(i)));
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const n = ['1','2','3'].indexOf(e.key);
+    if (n > -1) { select(n); tabs[n].focus(); }
+  });
+</script>
+</body>
+</html>

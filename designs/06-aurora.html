@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Akhil Kagithapu — Aurora</title>
+<style>
+  :root{
+    --night:#060a14;
+    --night-2:#0a1020;
+    --glass:rgba(255,255,255,.055);
+    --glass-2:rgba(255,255,255,.085);
+    --hair:rgba(255,255,255,.11);
+    --fg:#eef1f7;
+    --dim:#9aa6bd;
+    --faint:#6b7793;
+    --ice:#7adbe8;
+    --iris:#8b7dff;
+    --rose:#ff86b0;
+    --display:"Avenir Next","Avenir",Futura,"Helvetica Neue",sans-serif;
+    --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--night);color:var(--fg);font-family:var(--body);font-size:15.5px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--ice);text-decoration:none}
+  a:hover{color:#fff}
+  :focus-visible{outline:1.5px solid var(--ice);outline-offset:4px;border-radius:4px}
+
+  #sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 70% at 50% 0%,transparent 35%,rgba(6,10,20,.75) 100%)}
+  .wrap{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:0 22px 110px}
+
+  /* nav */
+  nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:20px 0;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  nav .nm{color:var(--fg);letter-spacing:.14em}
+  nav .push{margin-left:auto}
+  nav a{color:var(--faint)}
+  nav a:hover{color:var(--ice)}
+
+  /* hero */
+  header{padding:16vh 0 12vh}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ice);margin-bottom:22px}
+  h1{font-family:var(--display);font-size:clamp(44px,8.4vw,96px);line-height:.98;letter-spacing:-.035em;
+    font-weight:600;margin:0;max-width:16ch;text-wrap:balance}
+  h1 .thin{font-weight:300;color:var(--dim);display:block}
+  header p{max-width:52ch;color:#c0c9db;font-size:17px;line-height:1.62;margin:26px 0 0}
+  .herolinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+  .pillbtn{display:inline-block;padding:9px 18px;border-radius:999px;border:1px solid var(--hair);
+    background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    font-size:13.5px;color:var(--fg);letter-spacing:.01em}
+  .pillbtn:hover{background:var(--glass-2);border-color:rgba(122,219,232,.5);color:#fff}
+  .pillbtn.lit{background:linear-gradient(130deg,rgba(122,219,232,.9),rgba(139,125,255,.85));color:#060a14;border-color:transparent;font-weight:600}
+
+  /* glass panel */
+  .panel{border:1px solid var(--hair);border-radius:20px;background:var(--glass);
+    backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+    box-shadow:0 20px 60px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.08);
+    padding:26px 28px;overflow:hidden}
+  @media(max-width:620px){.panel{padding:20px 20px;border-radius:16px}}
+
+  section{margin-top:76px}
+  .shead{display:flex;align-items:baseline;gap:16px;margin-bottom:22px;padding-left:4px}
+  .shead h2{font-family:var(--display);margin:0;font-size:13px;letter-spacing:.26em;text-transform:uppercase;font-weight:600;color:var(--dim)}
+  .shead .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--hair),transparent)}
+  .shead .ct{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--faint)}
+
+  /* experience */
+  .roles{display:grid;gap:14px}
+  .role{display:grid;grid-template-columns:9em minmax(0,1fr);gap:26px}
+  @media(max-width:760px){.role{grid-template-columns:1fr;gap:10px}}
+  .role .when{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);padding-top:5px;font-variant-numeric:tabular-nums}
+  .role h3{font-family:var(--display);margin:0;font-size:21px;letter-spacing:-.02em;font-weight:600}
+  .role .rl{color:var(--ice);font-size:13px;font-family:var(--mono);letter-spacing:.04em;margin-top:5px}
+  .role ul{margin:13px 0 0;padding:0;list-style:none}
+  .role li{color:#b7c1d4;font-size:14.5px;line-height:1.56;padding-left:17px;position:relative;margin-bottom:7px}
+  .role li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;
+    background:linear-gradient(140deg,var(--ice),var(--iris))}
+  .role li:last-child{margin-bottom:0}
+  .role li strong{color:#fff;font-weight:600}
+
+  /* projects */
+  .work{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+  .w{display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .2s ease,border-color .2s}
+  .w:hover{transform:translateY(-4px);border-color:rgba(122,219,232,.4)}
+  .w .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .w .top .pz{color:var(--rose);text-transform:none;letter-spacing:.04em}
+  .w h3{font-family:var(--display);margin:0 0 7px;font-size:22px;letter-spacing:-.02em;font-weight:600}
+  .w p{margin:0 0 16px;font-size:14.5px;line-height:1.55;color:#b4bed2}
+  .w .metric{margin-top:auto;padding-top:14px;border-top:1px solid var(--hair);display:flex;gap:20px;flex-wrap:wrap}
+  .w .metric div .v{font-family:var(--display);font-size:22px;letter-spacing:-.025em;
+    background:linear-gradient(120deg,var(--ice),var(--iris));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600}
+  .w .metric div .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+
+  /* figures */
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+  .fig{text-align:left}
+  .fig .n{font-family:var(--display);font-size:clamp(34px,5vw,50px);line-height:1;letter-spacing:-.04em;font-weight:600;
+    background:linear-gradient(120deg,#fff,var(--ice) 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .fig p{margin:11px 0 0;font-size:13.5px;line-height:1.5;color:var(--dim)}
+
+  /* skills + about split */
+  .split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px}
+  @media(max-width:820px){.split{grid-template-columns:1fr}}
+  .tgroup + .tgroup{margin-top:20px}
+  .tgroup h4{font-family:var(--mono);margin:0 0 10px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .tags{display:flex;flex-wrap:wrap;gap:7px}
+  .tags span{border:1px solid var(--hair);border-radius:999px;padding:3px 11px;font-size:12.5px;color:#c3cbdd;background:rgba(255,255,255,.03)}
+  .about p{margin:0 0 13px;color:#bcc5d8;font-size:14.5px;line-height:1.62}
+  .about p:last-child{margin-bottom:0}
+  .about dl{display:grid;grid-template-columns:max-content 1fr;gap:5px 18px;margin:18px 0 0;
+    font-size:13.5px;border-top:1px solid var(--hair);padding-top:16px}
+  .about dt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding-top:3px}
+  .about dd{margin:0}
+
+  /* contact */
+  .contact{text-align:center;padding:46px 28px}
+  .contact h2{font-family:var(--display);font-size:clamp(28px,5vw,46px);letter-spacing:-.03em;margin:0 0 12px;font-weight:600;text-transform:none}
+  .contact p{color:var(--dim);margin:0 auto 26px;max-width:46ch}
+  .contact .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  footer{margin-top:52px;display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<div class="wrap">
+  <nav>
+    <span class="nm">Akhil Kagithapu</span>
+    <a href="#work">Work</a>
+    <a href="#builds">Builds</a>
+    <a href="#toolkit">Toolkit</a>
+    <span class="push"><a href="mailto:kagithapu.akhil@gmail.com">Contact</a></span>
+  </nav>
+
+  <header>
+    <p class="eyebrow">Ithaca, NY · 42.44° N</p>
+    <h1>Machine learning,<span class="thin">from the kernel up.</span></h1>
+    <p>I'm a Philly-born CS student at Cornell who likes building things that ship — GPU kernels, tokenizer-free LLMs, agentic systems, and the full stack underneath them. Incoming ML engineering intern at Meta.</p>
+    <div class="herolinks">
+      <a class="pillbtn lit" href="mailto:kagithapu.akhil@gmail.com">Get in touch</a>
+      <a class="pillbtn" href="https://github.com/akh1lk">GitHub</a>
+      <a class="pillbtn" href="https://linkedin.com/in/akhil-kagithapu">LinkedIn</a>
+      <a class="pillbtn" href="https://drive.google.com/file/d/1Xj8y1tuMrDWrCt6oiF7NgFf34yKu3gAj/view?usp=sharing">Résumé</a>
+    </div>
+  </header>
+
+  <section id="work">
+    <div class="shead"><h2>Experience</h2><span class="ln"></span><span class="ct">2024 — 2026</span></div>
+    <div class="panel">
+      <div class="roles">
+        <div class="role">
+          <span class="when">May – Aug 2026</span>
+          <div>
+            <h3>Meta</h3>
+            <div class="rl">Machine Learning Engineering Intern · Menlo Park</div>
+            <ul>
+              <li>Improving on-device models that predict near-term app re-engagement, enabling resource-aware prefetching</li>
+              <li>Built a model-agnostic evaluation harness and benchmarked 3 agentic model-optimization tools across <strong>70+ runs</strong></li>
+              <li>Cut one tool's wall time by <strong>43%</strong> via refined experiment generation and feedback loops</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <span class="when">Feb 2025 →</span>
+          <div>
+            <h3>Hack4Impact Cornell</h3>
+            <div class="rl">Technical Lead, Medic</div>
+            <ul>
+              <li>Lead <strong>8 engineers</strong> building the public impact dashboard for Medic's Community Health Toolkit, which supports <strong>182K+ health workers</strong> across <strong>24 countries</strong></li>
+              <li>Own architecture and delivery across React, TypeScript, Express, PostgreSQL, Prisma, and Docker</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <span class="when">Jun – Aug 2025</span>
+          <div>
+            <h3>Penske Truck Leasing</h3>
+            <div class="rl">Software Engineering Intern · Reading, PA</div>
+            <ul>
+              <li>Built access-separated RAG on Azure AI Foundry for contract Q&amp;A, slated for <strong>20K+</strong> clients and employees</li>
+              <li>Created a quality-control app for <strong>50K truck</strong> inspections, estimated to save <strong>6K+ hours/year</strong></li>
+              <li>Developed microservices with Native Federation and Spring Boot, deployed via CI/CD on OpenShift</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <span class="when">Oct 2024 – Dec 2025</span>
+          <div>
+            <h3>Engineers for a Sustainable World</h3>
+            <div class="rl">Technical Project Lead, AI/ML</div>
+            <ul>
+              <li>Led <strong>5 engineers</strong> building an agentic RAG chatbot that simplifies anomaly reporting for Cornell's energy meters</li>
+              <li>Cut lookup time from 5+ minutes to <strong>under 1 minute</strong> using AWS Bedrock and LangChain on live anomaly data</li>
+              <li>Integrated real-time fault and consumption data from <strong>300+ panels</strong> into graph and heatmap visualizations</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <span class="when">Spring – Sum 2025</span>
+          <div>
+            <h3>RapStudy</h3>
+            <div class="rl">Software Engineering Intern · Remote</div>
+            <ul><li>Full-stack development and auth integration for an EdTech startup turning music into learning tools</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="builds">
+    <div class="shead"><h2>Selected builds</h2><span class="ln"></span><span class="ct">8 of 9</span></div>
+    <div class="work">
+      <a class="panel w" href="https://github.com/ashtonchew/traceback">
+        <div class="top"><span>2026 · RL</span><span class="pz">YC Frontier · $6,000</span></div>
+        <h3>Traceback</h3>
+        <p>Automated red-teaming that surfaces the reward hacks RL graders miss. Snapshots vulnerable agent trajectories, then launches parallel attacker sandboxes.</p>
+        <div class="metric">
+          <div><div class="v">14</div><div class="l">hacks found</div></div>
+          <div><div class="v">+3%</div><div class="l">Qwen3-4B after SFT</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/laerdon/blt-replication">
+        <div class="top"><span>2026 · PyTorch</span><span class="pz">From scratch</span></div>
+        <h3>Byte Latent Transformer</h3>
+        <p>Meta FAIR's tokenizer-free LLM rebuilt end to end: byte local encoder/decoder, patch-side latent transformer, RoPE with grouped-query attention, SwiGLU.</p>
+        <div class="metric">
+          <div><div class="v">1.21</div><div class="l">val BPB vs 1.22</div></div>
+          <div><div class="v">1.7B</div><div class="l">tokens · 86M params</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/akh1lk/pope-fused-triton">
+        <div class="top"><span>2026 · Triton</span><span class="pz">GPU kernels</span></div>
+        <h3>Fused PoPE Attention</h3>
+        <p>FlashAttention-style tiled attention written across three Triton kernels, with softplus and rotation fused into the inner loop to cut memory traffic.</p>
+        <div class="metric">
+          <div><div class="v">−15%</div><div class="l">latency</div></div>
+          <div><div class="v">4K</div><div class="l">seq len on T4</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/ezrakoreen/imc-prosperity-4">
+        <div class="top"><span>2026 · Rust</span><span class="pz">Top 1.5% globally</span></div>
+        <h3>IMC Prosperity 4</h3>
+        <p>Mean-reversion, market-making, and derivatives strategies across simulated markets, backed by a Rust backtesting engine and Python tooling.</p>
+        <div class="metric">
+          <div><div class="v">#216</div><div class="l">of 18,800+ teams</div></div>
+          <div><div class="v">#37</div><div class="l">options round</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/akh1lk/torque">
+        <div class="top"><span>2025 · C++</span><span class="pz">For VFX creators</span></div>
+        <h3>Torque</h3>
+        <p>Converts multi-view images into photorealistic 3D models with SAM2 and Gaussian Splatting; mask processing vectorized through OpenMP, SIMD, and Pybind11.</p>
+        <div class="metric">
+          <div><div class="v">−35%</div><div class="l">reconstruction time</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/khuhub/cursor-escalate">
+        <div class="top"><span>2026 · TypeScript</span><span class="pz">Cursor × a16z</span></div>
+        <h3>Cursor Escalate</h3>
+        <p>A cost-aware model ladder for coding agents: start cheapest, grade each attempt against a frozen rubric, escalate only when scores plateau or checks fail twice.</p>
+        <div class="metric">
+          <div><div class="v">JSON</div><div class="l">replayable trajectories</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/khuhub/brandr">
+        <div class="top"><span>2026 · Agents</span><span class="pz">YC × Browser Use</span></div>
+        <h3>Brandr</h3>
+        <p>Browser agents that navigate TikTok like people do — opening profiles, expanding captions, screenshotting posts — then score content against campaign rules.</p>
+        <div class="metric">
+          <div><div class="v">Discovery</div><div class="l">suggested-accounts graph</div></div>
+        </div>
+      </a>
+      <a class="panel w" href="https://github.com/akh1lk/vocera">
+        <div class="top"><span>2025 · Audio</span><span class="pz">Berkeley AI Hackathon</span></div>
+        <h3>Vocera</h3>
+        <p>Real-time anti-deepfake voice authentication pairing Whisper with OpenSMILE embeddings, comparing similarity across 50+ enrolled samples.</p>
+        <div class="metric">
+          <div><div class="v">&lt;3s</div><div class="l">verification</div></div>
+          <div><div class="v">24h</div><div class="l">to MVP</div></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><h2>Figures</h2><span class="ln"></span></div>
+    <div class="figs">
+      <div class="panel fig"><div class="n">3.96</div><p>GPA at Cornell — B.S. Computer Science with a Business minor, expected May 2028.</p></div>
+      <div class="panel fig"><div class="n">182K+</div><p>Community health workers reached by the Medic dashboard, across 24 countries.</p></div>
+      <div class="panel fig"><div class="n">$6,000</div><p>Best Product Design and 6th place at the YC Frontier RSI/RL Hackathon.</p></div>
+      <div class="panel fig"><div class="n">43%</div><p>Wall-time reduction on a model-optimization tool during the Meta internship.</p></div>
+    </div>
+  </section>
+
+  <section id="toolkit">
+    <div class="shead"><h2>Toolkit &amp; background</h2><span class="ln"></span></div>
+    <div class="split">
+      <div class="panel">
+        <div class="tgroup"><h4>Languages</h4><div class="tags"><span>Python</span><span>C++</span><span>Rust</span><span>Go</span><span>Java</span><span>TypeScript</span><span>JavaScript</span><span>OCaml</span><span>SQL</span><span>Bash</span><span>RISC-V</span></div></div>
+        <div class="tgroup"><h4>ML · Systems · Infra</h4><div class="tags"><span>PyTorch</span><span>Triton</span><span>CUDA</span><span>scikit-learn</span><span>OpenMP</span><span>SIMD</span><span>Docker</span><span>AWS</span><span>GCP</span><span>Azure AI Foundry</span><span>LangChain</span></div></div>
+        <div class="tgroup"><h4>Backend · Full-stack</h4><div class="tags"><span>React</span><span>Next.js</span><span>Node.js</span><span>Express</span><span>Spring Boot</span><span>Flask</span><span>FastAPI</span><span>PostgreSQL</span><span>Prisma</span><span>Convex</span></div></div>
+        <div class="tgroup"><h4>Coursework</h4><div class="tags"><span>Deep Learning</span><span>Reinforcement Learning</span><span>Machine Learning</span><span>Systems Programming</span><span>Computer Systems</span><span>Analysis of Algorithms</span><span>Backend Development</span></div></div>
+      </div>
+      <div class="panel about">
+        <p>I grew up in Philadelphia and ended up in Ithaca studying computer science with a business minor. What I like most is the span: writing an attention kernel in the morning and shipping the interface that depends on it in the afternoon.</p>
+        <p>ML, systems, and quantitative finance are the three directions I keep returning to — which is how a Triton kernel, a tokenizer-free LLM replication, and a Rust backtester all ended up on the same page.</p>
+        <p>Outside of code I play tennis and squash, make VFX illusions in digital media, and hunt down the spiciest food I can find.</p>
+        <dl>
+          <dt>School</dt><dd>Cornell University</dd>
+          <dt>Degree</dt><dd>B.S. Computer Science, Business minor</dd>
+          <dt>Class</dt><dd>Expected May 2028</dd>
+          <dt>Based</dt><dd>Ithaca, NY</dd>
+          <dt>Phone</dt><dd>610-823-6700</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="panel contact">
+      <h2>Building something interesting?</h2>
+      <p>I'm open to ML engineering, systems, and quant internships — and always up for talking about kernels or reward hacking.</p>
+      <div class="row">
+        <a class="pillbtn lit" href="mailto:kagithapu.akhil@gmail.com">kagithapu.akhil@gmail.com</a>
+        <a class="pillbtn" href="https://github.com/akh1lk">GitHub</a>
+        <a class="pillbtn" href="https://linkedin.com/in/akhil-kagithapu">LinkedIn</a>
+        <a class="pillbtn" href="https://akhilkagithapu.com">akhilkagithapu.com</a>
+      </div>
+    </div>
+    <footer>
+      <span>Akhil Kagithapu</span>
+      <span>Aurora over Ithaca</span>
+      <span>MMXXVI</span>
+    </footer>
+  </section>
+</div>
+
+<script>
+  const cv = document.getElementById('sky');
+  const ctx = cv.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, DPR, stars = [];
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    stars = Array.from({length: Math.round(W * H / 9000)}, (_, i) => ({
+      x: ((i * 7919) % 1000) / 1000 * W,
+      y: ((i * 104729) % 1000) / 1000 * H * 0.85,
+      r: 0.4 + ((i * 31) % 10) / 14,
+      a: 0.18 + ((i * 17) % 10) / 22,
+      p: (i % 23) / 23
+    }));
+  }
+
+  // three aurora curtains, each a stack of vertical gradient strokes along a drifting sine
+  const curtains = [
+    { hue: 'rgba(122,219,232,', amp: 58, freq: 0.0021, y: 0.30, spd: 0.00022, w: 150 },
+    { hue: 'rgba(139,125,255,', amp: 74, freq: 0.0015, y: 0.38, spd: -0.00016, w: 190 },
+    { hue: 'rgba(255,134,176,', amp: 44, freq: 0.0029, y: 0.24, spd: 0.00031, w: 110 }
+  ];
+
+  function draw(t){
+    ctx.clearRect(0, 0, W, H);
+
+    for (const s of stars){
+      const tw = reduce ? 1 : 0.65 + 0.35 * Math.sin(t * 0.0012 + s.p * 6.28);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(226,235,255,' + (s.a * tw).toFixed(3) + ')';
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = 'lighter';
+    for (const c of curtains){
+      const phase = reduce ? 0 : t * c.spd;
+      const topAt = x => H * c.y + Math.sin(x * c.freq + phase) * c.amp
+                       + Math.sin(x * c.freq * 2.7 + phase * 1.6) * c.amp * 0.33;
+      const hAt   = x => c.w + Math.sin(x * c.freq * 1.9 + phase * 2.1) * c.w * 0.3;
+
+      // one continuous ribbon per curtain — no per-column seams
+      ctx.beginPath();
+      for (let x = -60; x <= W + 60; x += 10) x === -60 ? ctx.moveTo(x, topAt(x)) : ctx.lineTo(x, topAt(x));
+      for (let x = W + 60; x >= -60; x -= 10) ctx.lineTo(x, topAt(x) + hAt(x));
+      ctx.closePath();
+
+      const lo = H * c.y - c.amp * 1.4, hi = H * c.y + c.amp * 1.4 + c.w * 1.3;
+      const g = ctx.createLinearGradient(0, lo, 0, hi);
+      g.addColorStop(0, c.hue + '0)');
+      g.addColorStop(0.3, c.hue + '0.10)');
+      g.addColorStop(0.62, c.hue + '0.05)');
+      g.addColorStop(1, c.hue + '0)');
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function loop(t){ draw(t); requestAnimationFrame(loop); }
+  resize();
+  addEventListener('resize', () => { resize(); if (reduce) draw(0); });
+  if (reduce) draw(0); else requestAnimationFrame(loop);
+</script>
+</body>
+</html>

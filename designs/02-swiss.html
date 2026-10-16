@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kagithapu — Grid</title>
+<style>
+  :root{
+    --paper:#f2f1ee;
+    --ink:#101010;
+    --grey:#8d8d88;
+    --rule:#c9c8c3;
+    --signal:#e03127;
+    --sans:"Helvetica Neue",Helvetica,"Inter",Arial,sans-serif;
+    --mono:"SF Mono",Menlo,monospace;
+    --col:minmax(0,1fr);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px 100px;position:relative}
+
+  /* visible 6-col grid */
+  .grid{display:grid;grid-template-columns:repeat(6,var(--col));gap:0 24px}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,var(--col))}}
+
+  .rule{border-top:1px solid var(--ink);grid-column:1/-1;margin:0}
+  .hair{border-top:1px solid var(--rule);grid-column:1/-1}
+
+  /* masthead */
+  header{padding-top:22px}
+  .meta-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);
+    padding-bottom:9px}
+  .meta-row b{color:var(--ink);font-weight:400}
+  .name{
+    font-size:clamp(54px,15.4vw,208px);
+    line-height:.84;font-weight:700;letter-spacing:-.045em;
+    margin:.14em 0 0;text-transform:uppercase;
+    display:block;
+  }
+  .name .l2{display:block;color:var(--signal)}
+  .lede{
+    grid-column:1/5;padding:26px 0 30px;
+    font-size:clamp(19px,2.5vw,30px);line-height:1.26;letter-spacing:-.02em;font-weight:500;
+    max-width:30ch;text-wrap:balance;
+  }
+  .lede-side{grid-column:5/7;padding:28px 0 30px;font-size:13.5px;line-height:1.55;color:#3a3a38}
+  @media(max-width:900px){.lede,.lede-side{grid-column:1/-1}.lede-side{padding-top:0}}
+
+  /* section head: number + label, label rotated on wide screens */
+  section{padding-top:0}
+  .shead{grid-column:1/-1;display:flex;align-items:baseline;gap:18px;padding:12px 0 26px}
+  .shead .ix{font-family:var(--mono);font-size:11px;color:var(--signal);letter-spacing:.1em}
+  .shead h2{margin:0;font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700}
+  .shead .note{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+
+  /* work rows */
+  .row{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,var(--col));gap:4px 24px;
+    padding:22px 0;border-top:1px solid var(--rule);align-items:start}
+  .row:hover{background:#ebeae6}
+  .row .when{grid-column:1/2;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--grey);padding-top:4px;font-variant-numeric:tabular-nums}
+  .row .who{grid-column:2/4}
+  .row .what{grid-column:4/7}
+  @media(max-width:900px){
+    .row{grid-template-columns:repeat(2,var(--col))}
+    .row .when,.row .who,.row .what{grid-column:1/-1}
+  }
+  .row h3{margin:0;font-size:clamp(21px,2.4vw,30px);line-height:1.08;letter-spacing:-.026em;font-weight:600}
+  .row .role{margin:5px 0 0;font-size:13.5px;color:#4b4b48}
+  .row .what p{margin:0 0 7px;font-size:14px;line-height:1.5;color:#2a2a28;max-width:52ch}
+  .row .what p:last-child{margin-bottom:0}
+  .fig{font-family:var(--mono);color:var(--signal);font-variant-numeric:tabular-nums}
+
+  /* project index as a type table */
+  .proj{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,var(--col));gap:0 24px;
+    border-top:1px solid var(--rule);padding:16px 0;text-decoration:none;color:inherit;align-items:baseline}
+  .proj:hover .pt{color:var(--signal)}
+  .proj:hover .arrow{transform:translateX(6px)}
+  .proj:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+  .proj .yr{grid-column:1/2;font-family:var(--mono);font-size:11px;color:var(--grey)}
+  .proj .pt{grid-column:2/4;font-size:clamp(20px,2.2vw,27px);letter-spacing:-.025em;font-weight:600;line-height:1.1;transition:color .18s}
+  .proj .pd{grid-column:4/6;font-size:13.5px;line-height:1.45;color:#3c3c39;max-width:40ch}
+  .proj .st{grid-column:6/7;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);text-align:right}
+  .proj .arrow{display:inline-block;transition:transform .18s;color:var(--signal)}
+  @media(max-width:900px){
+    .proj{grid-template-columns:repeat(2,var(--col));gap:4px 24px}
+    .proj .yr,.proj .pt,.proj .pd,.proj .st{grid-column:1/-1;text-align:left}
+  }
+
+  /* awards: big figures */
+  .figs{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,var(--col));gap:24px;padding:6px 0 10px}
+  @media(max-width:900px){.figs{grid-template-columns:1fr}}
+  .fcard{border-top:3px solid var(--ink);padding-top:12px}
+  .fcard .big{font-size:clamp(38px,5.6vw,66px);line-height:.92;letter-spacing:-.045em;font-weight:700;font-variant-numeric:tabular-nums}
+  .fcard .cap{font-size:13px;color:#3c3c39;margin-top:8px;max-width:26ch}
+  .fcard.red{border-top-color:var(--signal)}
+  .fcard.red .big{color:var(--signal)}
+
+  /* skills */
+  .skills{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,var(--col));gap:28px 24px;padding-bottom:10px}
+  @media(max-width:900px){.skills{grid-template-columns:1fr}}
+  .skills h4{margin:0 0 9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);
+    border-bottom:1px solid var(--rule);padding-bottom:7px}
+  .skills ul{margin:0;padding:0;list-style:none;columns:2;column-gap:20px;font-size:13.5px;line-height:1.75}
+  .skills li{break-inside:avoid}
+
+  /* footer */
+  footer{padding-top:30px}
+  .contact{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,var(--col));gap:16px 24px}
+  .contact a{grid-column:span 2;display:block;text-decoration:none;color:var(--ink);
+    border-top:1px solid var(--ink);padding-top:10px;font-size:clamp(17px,2vw,23px);letter-spacing:-.02em;font-weight:600}
+  .contact a span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);font-weight:400;margin-bottom:6px}
+  .contact a:hover{color:var(--signal);border-top-color:var(--signal)}
+  .contact a:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+  @media(max-width:900px){.contact{grid-template-columns:1fr}.contact a{grid-column:1/-1}}
+  .colophon{grid-column:1/-1;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);
+    padding:40px 0 0;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="meta-row">
+      <span>Akhil Kagithapu — <b>Portfolio 2026</b></span>
+      <span>Cornell University · CS '28</span>
+      <span>Ithaca, NY &nbsp;·&nbsp; 42.44°N 76.50°W</span>
+    </div>
+    <div class="rule"></div>
+    <h1 class="name">Akhil<span class="l2">Kagithapu</span></h1>
+  </header>
+
+  <div class="grid">
+    <div class="rule" style="margin-top:18px"></div>
+    <p class="lede">Machine learning engineer working from the kernel up — and shipping the product on top.</p>
+    <div class="lede-side">
+      <p>Philly-born, Cornell CS with a business minor, 3.96. The work runs from Triton attention kernels and a tokenizer-free LLM reproduced from scratch to agentic systems, RAG under real access controls, and dashboards used in 24 countries.</p>
+      <p>Interested in ML, systems, and quantitative finance. Off-screen: tennis, squash, VFX illusions, and the hottest food on the menu.</p>
+    </div>
+
+    <section class="grid" style="grid-column:1/-1;display:contents">
+      <div class="rule"></div>
+      <div class="shead"><span class="ix">01</span><h2>Experience</h2><span class="note">Five positions · 2024 – 2026</span></div>
+
+      <div class="row">
+        <span class="when">2026</span>
+        <div class="who"><h3>Meta</h3><p class="role">Machine Learning Engineering Intern — Menlo Park, CA</p></div>
+        <div class="what">
+          <p>Improving on-device models that predict near-term app re-engagement, enabling resource-aware prefetching.</p>
+          <p>Built a model-agnostic evaluation harness and benchmarked three agentic model-optimization tools across <span class="fig">70+</span> runs; cut one tool's wall time by <span class="fig">43%</span> through refined experiment generation and feedback loops.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="when">2025 —</span>
+        <div class="who"><h3>Hack4Impact</h3><p class="role">Technical Lead, Medic — Ithaca, NY</p></div>
+        <div class="what">
+          <p>Lead eight engineers building the public impact dashboard for Medic's Community Health Toolkit, which supports <span class="fig">182,000+</span> health workers across <span class="fig">24</span> countries.</p>
+          <p>Own architecture and delivery: React, TypeScript, Express, PostgreSQL, Prisma, Docker.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="when">2025</span>
+        <div class="who"><h3>Penske</h3><p class="role">Software Engineering Intern — Reading, PA</p></div>
+        <div class="what">
+          <p>Built access-separated RAG on Azure AI Foundry for contract Q&amp;A, slated for <span class="fig">20,000+</span> clients and employees.</p>
+          <p>Shipped a quality-control app streamlining inspections for <span class="fig">50,000</span> trucks — an estimated <span class="fig">6,000+</span> hours saved per year. Microservices with Native Federation and Spring Boot, deployed via CI/CD on OpenShift.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="when">2024 – 25</span>
+        <div class="who"><h3>Engineers for a Sustainable World</h3><p class="role">Technical Project Lead, AI/ML — Ithaca, NY</p></div>
+        <div class="what">
+          <p>Led five engineers on an agentic RAG chatbot that simplifies anomaly reporting for Cornell's energy meters.</p>
+          <p>Cut lookup time from over five minutes to under one using AWS Bedrock and LangChain; integrated live fault and consumption data from <span class="fig">300+</span> panels into graph and heatmap views.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="when">2025</span>
+        <div class="who"><h3>RapStudy</h3><p class="role">Software Engineering Intern — Remote</p></div>
+        <div class="what"><p>Full-stack development and auth integration for an EdTech startup turning music into learning tools.</p></div>
+      </div>
+    </section>
+
+    <section style="display:contents">
+      <div class="rule" style="margin-top:46px"></div>
+      <div class="shead"><span class="ix">02</span><h2>Selected Work</h2><span class="note">Index</span></div>
+
+      <a class="proj" href="https://github.com/ashtonchew/traceback">
+        <span class="yr">2026</span>
+        <span class="pt">Traceback <span class="arrow">→</span></span>
+        <span class="pd">Automated red-teaming that surfaces reward hacks RL graders miss. 14 grader-breaking exploits across 10 Terminal Bench tasks; SFT on the resulting dataset lifted Qwen3-4B by 3%.</span>
+        <span class="st">Python / RL / SFT</span>
+      </a>
+      <a class="proj" href="https://github.com/laerdon/blt-replication">
+        <span class="yr">2026</span>
+        <span class="pt">Byte Latent Transformer <span class="arrow">→</span></span>
+        <span class="pd">Meta FAIR's tokenizer-free LLM rebuilt from scratch — byte encoder/decoder, patch-side latent transformer, RoPE + GQA. Matched a GPT-2 BPE baseline at 1.21 val BPB.</span>
+        <span class="st">PyTorch / xformers</span>
+      </a>
+      <a class="proj" href="https://github.com/akh1lk/pope-fused-triton">
+        <span class="yr">2026</span>
+        <span class="pt">Fused PoPE Kernel <span class="arrow">→</span></span>
+        <span class="pd">FlashAttention-style tiled attention in Triton across three kernels. 15% lower latency than Cartesian PoPE via in-kernel softplus and rotation.</span>
+        <span class="st">Triton / CUDA</span>
+      </a>
+      <a class="proj" href="https://github.com/ezrakoreen/imc-prosperity-4">
+        <span class="yr">2026</span>
+        <span class="pt">IMC Prosperity 4 <span class="arrow">→</span></span>
+        <span class="pd">Mean-reversion, market-making, and derivatives strategies on Rust backtesting infrastructure. #216 of 18,800+ teams; #37 worldwide in the options round.</span>
+        <span class="st">Rust / Python</span>
+      </a>
+      <a class="proj" href="https://github.com/khuhub/cursor-escalate">
+        <span class="yr">2026</span>
+        <span class="pt">Cursor Escalate <span class="arrow">→</span></span>
+        <span class="pd">A cost-aware model ladder for coding agents: starts cheapest, grades each attempt against a frozen rubric, escalates only when progress plateaus.</span>
+        <span class="st">TypeScript / Cursor SDK</span>
+      </a>
+      <a class="proj" href="https://github.com/akh1lk/torque">
+        <span class="yr">2025</span>
+        <span class="pt">Torque <span class="arrow">→</span></span>
+        <span class="pd">Image-to-3D reconstruction for VFX creators using SAM2 and Gaussian Splatting. 35% faster via pointcloud filtering and SIMD mask processing in C++.</span>
+        <span class="st">C++ / OpenMP / AWS</span>
+      </a>
+      <a class="proj" href="https://github.com/khuhub/brandr">
+        <span class="yr">2026</span>
+        <span class="pt">Brandr <span class="arrow">→</span></span>
+        <span class="pd">Browser agents that navigate TikTok like humans to audit creator content against campaign rules, including a discovery agent that taps the suggested-accounts graph.</span>
+        <span class="st">Next.js / Browser Use</span>
+      </a>
+      <a class="proj" href="https://github.com/akh1lk/vocera">
+        <span class="yr">2025</span>
+        <span class="pt">Vocera <span class="arrow">→</span></span>
+        <span class="pd">Real-time anti-deepfake voice authentication combining Whisper and OpenSMILE embeddings. Verification under three seconds, built in 24 hours.</span>
+        <span class="st">React Native / Flask</span>
+      </a>
+      <div class="hair"></div>
+    </section>
+
+    <section style="display:contents">
+      <div class="rule" style="margin-top:46px"></div>
+      <div class="shead"><span class="ix">03</span><h2>Figures</h2></div>
+      <div class="figs">
+        <div class="fcard red"><div class="big">#216</div><p class="cap">of 18,800+ teams, IMC Prosperity 4 — and #37 worldwide in the options round.</p></div>
+        <div class="fcard"><div class="big">$6,000</div><p class="cap">Best Product Design and 6th place, YC Frontier RSI/RL Hackathon.</p></div>
+        <div class="fcard"><div class="big">3.96</div><p class="cap">GPA at Cornell — deep learning, RL, systems programming, algorithms.</p></div>
+      </div>
+    </section>
+
+    <section style="display:contents">
+      <div class="rule" style="margin-top:46px"></div>
+      <div class="shead"><span class="ix">04</span><h2>Toolkit</h2></div>
+      <div class="skills">
+        <div><h4>Languages</h4><ul><li>Python</li><li>C++</li><li>Rust</li><li>Go</li><li>Java</li><li>TypeScript</li><li>OCaml</li><li>SQL</li><li>Bash</li><li>RISC-V</li></ul></div>
+        <div><h4>ML · Systems · Infra</h4><ul><li>PyTorch</li><li>Triton</li><li>CUDA</li><li>scikit-learn</li><li>OpenMP</li><li>SIMD</li><li>Docker</li><li>AWS</li><li>GCP</li><li>Azure</li></ul></div>
+        <div><h4>Backend · Full-stack</h4><ul><li>React</li><li>Next.js</li><li>Node.js</li><li>Express</li><li>Spring Boot</li><li>Flask</li><li>FastAPI</li><li>PostgreSQL</li><li>Prisma</li><li>Convex</li></ul></div>
+      </div>
+    </section>
+
+    <footer style="display:contents">
+      <div class="rule" style="margin-top:46px"></div>
+      <div class="shead"><span class="ix">05</span><h2>Contact</h2></div>
+      <div class="contact">
+        <a href="mailto:kagithapu.akhil@gmail.com"><span>Email</span>kagithapu.akhil@gmail.com</a>
+        <a href="https://github.com/akh1lk"><span>GitHub</span>akh1lk</a>
+        <a href="https://linkedin.com/in/akhil-kagithapu"><span>LinkedIn</span>akhil-kagithapu</a>
+        <a href="https://drive.google.com/file/d/1Xj8y1tuMrDWrCt6oiF7NgFf34yKu3gAj/view?usp=sharing"><span>Document</span>Résumé, PDF</a>
+        <a href="tel:16108236700"><span>Telephone</span>610 823 6700</a>
+        <a href="https://akhilkagithapu.com"><span>Web</span>akhilkagithapu.com</a>
+      </div>
+      <div class="colophon">
+        <span>Set in Helvetica Neue · six-column grid</span>
+        <span>Akhil Kagithapu, Ithaca</span>
+        <span>MMXXVI</span>
+      </div>
+    </footer>
+  </div>
+</div>
+</body>
+</html>

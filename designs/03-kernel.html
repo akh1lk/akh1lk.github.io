@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>akhil.kernel — occupancy</title>
+<style>
+  :root{
+    --void:#06080c;
+    --slab:#0b1017;
+    --slab-2:#0e141d;
+    --grid:#121b26;
+    --edge:#1b2634;
+    --fg:#dfe6ef;
+    --dim:#6d7d90;
+    --cyan:#4ad6e8;
+    --magenta:#ff5f91;
+    --lime:#b8e986;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",SFMono-Regular,Menlo,"PT Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--void);color:var(--fg);font-family:var(--sans);
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:44px 44px,44px 44px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{color:#fff}
+  a:focus-visible{outline:1px solid var(--cyan);outline-offset:3px}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px 90px}
+
+  .mono{font-family:var(--mono)}
+  .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+
+  /* top rail */
+  .rail{display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+    border-bottom:1px solid var(--edge);padding:16px 0;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .rail .dot{width:6px;height:6px;background:var(--lime);border-radius:50%;box-shadow:0 0 8px var(--lime)}
+  .rail .push{margin-left:auto}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:40px;padding:66px 0 54px;align-items:center}
+  @media(max-width:880px){.hero{grid-template-columns:1fr;padding:40px 0 34px;gap:28px}}
+  h1{
+    font-size:clamp(40px,7vw,86px);line-height:.94;letter-spacing:-.04em;font-weight:700;margin:12px 0 0;
+    text-wrap:balance;
+  }
+  h1 .fuse{
+    background:linear-gradient(96deg,var(--cyan),var(--magenta));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{color:#a9b6c6;font-size:16.5px;line-height:1.6;max-width:50ch;margin:20px 0 0}
+  .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+  .btn{display:inline-block;padding:9px 17px;border:1px solid var(--edge);background:var(--slab);
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg)}
+  .btn:hover{border-color:var(--cyan);color:var(--cyan);background:#0d1620}
+  .btn.p{border-color:var(--cyan);color:#06222a;background:var(--cyan)}
+  .btn.p:hover{background:#7ce6f4;color:#06222a}
+
+  /* tile visualization */
+  .tilebox{border:1px solid var(--edge);background:var(--slab);padding:16px}
+  .tiles{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin:12px 0 10px}
+  .tiles i{aspect-ratio:1;background:#121a24;display:block}
+  .tiles i.on{background:var(--cyan);animation:sweep 2.6s linear infinite}
+  .tiles i.hot{background:var(--magenta)}
+  @keyframes sweep{0%,100%{opacity:.18}45%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){.tiles i.on{animation:none;opacity:.8}}
+  .tilebox figcaption{font-family:var(--mono);font-size:10.5px;color:var(--dim);line-height:1.6}
+
+  /* section */
+  section{padding-top:58px}
+  .shead{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .shead h2{margin:0;font-size:13px;letter-spacing:.26em;text-transform:uppercase;font-weight:600}
+  .shead .fill{flex:1;height:1px;background:linear-gradient(90deg,var(--edge),transparent)}
+  .shead .ct{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+
+  /* kernels = projects */
+  .kernels{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
+  .k{border:1px solid var(--edge);background:var(--slab);padding:18px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .k::after{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--cyan);opacity:.5}
+  .k.hot::after{background:var(--magenta)}
+  .k:hover{background:var(--slab-2);border-color:#263444}
+  .k h3{margin:0 0 3px;font-size:19px;letter-spacing:-.02em}
+  .k .sig{font-family:var(--mono);font-size:11px;color:var(--dim);margin:0 0 12px;word-break:break-word}
+  .k p{margin:0 0 13px;font-size:14px;line-height:1.55;color:#a6b3c3}
+  .k .metrics{display:flex;flex-wrap:wrap;gap:14px;margin-top:auto;padding-top:12px;border-top:1px solid #141d28}
+  .k .m .v{font-family:var(--mono);font-size:19px;color:var(--cyan);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .k.hot .m .v{color:var(--magenta)}
+  .k .m .n{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+
+  /* trace = experience */
+  .trace{border:1px solid var(--edge);background:var(--slab)}
+  .tr{display:grid;grid-template-columns:7.5em minmax(0,1fr) minmax(0,1.5fr);gap:20px;padding:18px 20px;border-top:1px solid #131c26}
+  .tr:first-child{border-top:0}
+  .tr:hover{background:var(--slab-2)}
+  @media(max-width:820px){.tr{grid-template-columns:1fr;gap:6px}}
+  .tr .t{font-family:var(--mono);font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;padding-top:3px}
+  .tr h3{margin:0;font-size:17px;letter-spacing:-.015em}
+  .tr .role{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-top:3px}
+  .tr ul{margin:0;padding:0;list-style:none}
+  .tr li{font-size:13.5px;line-height:1.55;color:#a2b0c0;padding-left:15px;position:relative;margin-bottom:5px}
+  .tr li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--dim)}
+  .tr li:last-child{margin-bottom:0}
+  b.v{color:var(--cyan);font-weight:400;font-family:var(--mono);font-size:13px}
+
+  /* occupancy = skills */
+  .occ{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .ocard{border:1px solid var(--edge);background:var(--slab);padding:16px}
+  .ocard h4{margin:0 0 14px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .reg{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:5px 0;border-bottom:1px solid #121b25;font-size:13.5px}
+  .reg:last-child{border-bottom:0}
+  .reg .bits{display:flex;gap:2px}
+  .reg .bits i{width:5px;height:11px;background:#1a2530;display:block}
+  .reg .bits i.s{background:var(--cyan)}
+
+  /* awards strip */
+  .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--edge);border:1px solid var(--edge)}
+  .strip div{background:var(--slab);padding:18px}
+  .strip .big{font-family:var(--mono);font-size:27px;color:var(--lime);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .strip p{margin:7px 0 0;font-size:12.5px;color:var(--dim);line-height:1.5}
+
+  footer{margin-top:66px;border-top:1px solid var(--edge);padding-top:22px;display:flex;flex-wrap:wrap;gap:16px 26px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  footer .push{margin-left:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="rail">
+    <span class="dot" aria-hidden="true"></span>
+    <span>akhil kagithapu</span>
+    <span>device 0 · ithaca, ny</span>
+    <span class="push">cornell cs '28</span>
+    <span>status: shipping</span>
+  </div>
+
+  <div class="hero">
+    <div>
+      <p class="lbl">ML engineer · systems · quant-curious</p>
+      <h1>I write the <span class="fuse">fused kernel</span> and the product on top of it.</h1>
+      <p>Philly-born, Cornell CS. The stack I like spans Triton attention kernels, a tokenizer-free LLM rebuilt from scratch, agentic RAG under real access controls, and dashboards used by 182K health workers in 24 countries.</p>
+      <div class="cta">
+        <a class="btn p" href="mailto:kagithapu.akhil@gmail.com">Get in touch</a>
+        <a class="btn" href="https://github.com/akh1lk">GitHub</a>
+        <a class="btn" href="https://drive.google.com/file/d/1Xj8y1tuMrDWrCt6oiF7NgFf34yKu3gAj/view?usp=sharing">Résumé</a>
+      </div>
+    </div>
+    <figure class="tilebox" style="margin:0">
+      <p class="lbl" style="margin:0">attention tiling · 4K seq · T4</p>
+      <div class="tiles" id="tiles" aria-hidden="true"></div>
+      <figcaption>
+        q_tile 128 × k_tile 64 · softplus fused in-register<br />
+        <span style="color:var(--magenta)">■</span> rotation applied &nbsp; <span style="color:var(--cyan)">■</span> live SMs &nbsp; <span style="color:#1a2530">■</span> idle<br />
+        latency −15% vs cartesian pope
+      </figcaption>
+    </figure>
+  </div>
+
+  <section>
+    <div class="shead"><h2>Kernels &amp; Builds</h2><span class="fill"></span><span class="ct">8 selected</span></div>
+    <div class="kernels">
+      <a class="k hot" href="https://github.com/akh1lk/pope-fused-triton">
+        <h3>Fused PoPE Attention</h3>
+        <p class="sig">triton_kernel&lt;rope | pope | fused&gt; · 2026</p>
+        <p>FlashAttention-style tiled attention written in Triton — three GPU kernels, with softplus and rotation folded into the inner loop to cut memory traffic.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">−15%</div><div class="n">latency</div></div>
+          <div class="m"><div class="v">4K</div><div class="n">seq len</div></div>
+          <div class="m"><div class="v">T4</div><div class="n">device</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/laerdon/blt-replication">
+        <h3>Byte Latent Transformer</h3>
+        <p class="sig">pytorch · xformers · torchrun · 2026</p>
+        <p>Meta FAIR's tokenizer-free LLM rebuilt from scratch: byte local encoder/decoder, patch-side latent transformer, RoPE + grouped-query attention, SwiGLU.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">1.21</div><div class="n">val bpb</div></div>
+          <div class="m"><div class="v">86M</div><div class="n">params</div></div>
+          <div class="m"><div class="v">1.7B</div><div class="n">tokens</div></div>
+        </div>
+      </a>
+      <a class="k hot" href="https://github.com/ashtonchew/traceback">
+        <h3>Traceback</h3>
+        <p class="sig">rl · sft · qwen3-4b · terminal bench · 2026</p>
+        <p>Snapshots vulnerable agent trajectories, then launches parallel attacker sandboxes to surface reward hacks QA agents never find.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">14</div><div class="n">hacks found</div></div>
+          <div class="m"><div class="v">+3%</div><div class="n">post-sft</div></div>
+          <div class="m"><div class="v">$6K</div><div class="n">yc frontier</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/akh1lk/torque">
+        <h3>Torque</h3>
+        <p class="sig">sam2 · gaussian splatting · c++/openmp · 2025</p>
+        <p>Image-to-3D reconstruction for VFX creators. Mask processing vectorized with SIMD through Pybind11, async jobs on SQS, GPU on EC2.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">−35%</div><div class="n">recon time</div></div>
+          <div class="m"><div class="v">g4dn</div><div class="n">instance</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/ezrakoreen/imc-prosperity-4">
+        <h3>IMC Prosperity 4</h3>
+        <p class="sig">rust backtester · python strategies · 2026</p>
+        <p>Mean-reversion, market-making, and derivatives strategies across simulated markets, with backtesting infrastructure written in Rust.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">#216</div><div class="n">of 18,800+</div></div>
+          <div class="m"><div class="v">#37</div><div class="n">options round</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/khuhub/cursor-escalate">
+        <h3>Cursor Escalate</h3>
+        <p class="sig">typescript · cursor sdk · next.js · 2026</p>
+        <p>A cost-aware model ladder for coding agents: grade every attempt against a frozen rubric, escalate only when scores plateau or critical checks fail twice.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">JSON</div><div class="n">replayable runs</div></div>
+          <div class="m"><div class="v">a16z</div><div class="n">hackathon</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/khuhub/brandr">
+        <h3>Brandr</h3>
+        <p class="sig">browser-use · gemini 2.5 flash · convex · 2026</p>
+        <p>Browser agents that open profiles, expand captions, screenshot posts, and score creator content against campaign rules at scale.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">YC</div><div class="n">browser agents</div></div>
+        </div>
+      </a>
+      <a class="k" href="https://github.com/akh1lk/vocera">
+        <h3>Vocera</h3>
+        <p class="sig">whisper + opensmile embeddings · 2025</p>
+        <p>Real-time anti-deepfake voice authentication on React Native, comparing embedding similarity across live and enrolled samples.</p>
+        <div class="metrics">
+          <div class="m"><div class="v">&lt;3s</div><div class="n">verification</div></div>
+          <div class="m"><div class="v">24h</div><div class="n">build time</div></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><h2>Execution Trace</h2><span class="fill"></span><span class="ct">2024 → 2026</span></div>
+    <div class="trace">
+      <div class="tr">
+        <span class="t">may–aug 26</span>
+        <div><h3>Meta</h3><div class="role">ML engineering intern · menlo park</div></div>
+        <ul>
+          <li>On-device models predicting near-term app re-engagement for resource-aware prefetching</li>
+          <li>Model-agnostic eval harness; benchmarked 3 agentic optimization tools over <b class="v">70+</b> runs</li>
+          <li>Cut one tool's wall time <b class="v">43%</b> with refined experiment generation and feedback loops</li>
+        </ul>
+      </div>
+      <div class="tr">
+        <span class="t">feb 25 →</span>
+        <div><h3>Hack4Impact Cornell</h3><div class="role">technical lead, medic</div></div>
+        <ul>
+          <li>Lead <b class="v">8</b> engineers on the impact dashboard for Medic's Community Health Toolkit</li>
+          <li>Serves <b class="v">182K+</b> community health workers across <b class="v">24</b> countries</li>
+          <li>Architecture across React, TypeScript, Express, PostgreSQL, Prisma, Docker</li>
+        </ul>
+      </div>
+      <div class="tr">
+        <span class="t">jun–aug 25</span>
+        <div><h3>Penske Truck Leasing</h3><div class="role">software engineering intern · reading, pa</div></div>
+        <ul>
+          <li>Access-separated RAG on Azure AI Foundry for contract Q&amp;A — <b class="v">20K+</b> users</li>
+          <li>QC app for <b class="v">50K</b> truck inspections, est. <b class="v">6K+</b> hours/year saved</li>
+          <li>Microservices with Native Federation and Spring Boot; CI/CD on OpenShift</li>
+        </ul>
+      </div>
+      <div class="tr">
+        <span class="t">oct 24–dec 25</span>
+        <div><h3>Engineers for a Sustainable World</h3><div class="role">technical project lead, ai/ml</div></div>
+        <ul>
+          <li>Led <b class="v">5</b> engineers on an agentic RAG chatbot for Cornell's energy-meter anomalies</li>
+          <li>Lookup 5+ min → under <b class="v">1</b> min on AWS Bedrock + LangChain</li>
+          <li>Live fault and consumption data from <b class="v">300+</b> panels into graphs and heatmaps</li>
+        </ul>
+      </div>
+      <div class="tr">
+        <span class="t">spr–sum 25</span>
+        <div><h3>RapStudy</h3><div class="role">software engineering intern · remote</div></div>
+        <ul><li>Full-stack development and auth integration for an EdTech startup turning music into learning tools</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><h2>Register File</h2><span class="fill"></span><span class="ct">cornell cs · gpa 3.96</span></div>
+    <div class="occ">
+      <div class="ocard">
+        <h4>Languages</h4>
+        <div class="reg"><span>Python</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i></span></div>
+        <div class="reg"><span>C++ / CUDA</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i></span></div>
+        <div class="reg"><span>TypeScript</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i></span></div>
+        <div class="reg"><span>Rust</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i><i></i></span></div>
+        <div class="reg"><span>Go / Java</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i><i></i></span></div>
+        <div class="reg"><span>OCaml / RISC-V</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i><i></i><i></i></span></div>
+      </div>
+      <div class="ocard">
+        <h4>ML · Systems · Infra</h4>
+        <div class="reg"><span>PyTorch</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i></span></div>
+        <div class="reg"><span>Triton</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i></span></div>
+        <div class="reg"><span>OpenMP / SIMD</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i></span></div>
+        <div class="reg"><span>Docker</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i></span></div>
+        <div class="reg"><span>AWS / GCP / Azure</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i></span></div>
+        <div class="reg"><span>LangChain / Bedrock</span><span class="bits"><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i class="s"></i><i></i><i></i></span></div>
+      </div>
+      <div class="ocard">
+        <h4>Coursework</h4>
+        <div class="reg"><span>Deep Learning</span><span class="mono" style="color:var(--dim);font-size:11px">CS 4782</span></div>
+        <div class="reg"><span>Reinforcement Learning</span><span class="mono" style="color:var(--dim);font-size:11px">CS 4789</span></div>
+        <div class="reg"><span>Machine Learning</span><span class="mono" style="color:var(--dim);font-size:11px">CS 3780</span></div>
+        <div class="reg"><span>Systems Programming</span><span class="mono" style="color:var(--dim);font-size:11px">CS 3410</span></div>
+        <div class="reg"><span>Analysis of Algorithms</span><span class="mono" style="color:var(--dim);font-size:11px">CS 4820</span></div>
+        <div class="reg"><span>Backend Development</span><span class="mono" style="color:var(--dim);font-size:11px">CS 5150</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><h2>Benchmarks</h2><span class="fill"></span></div>
+    <div class="strip">
+      <div><div class="big">$6,000</div><p>Best Product Design &amp; 6th place — YC Frontier RSI/RL Hackathon</p></div>
+      <div><div class="big">#216</div><p>of 18,800+ teams in IMC Prosperity 4; #37 worldwide in options</p></div>
+      <div><div class="big">3.96</div><p>GPA, Cornell B.S. Computer Science with a Business minor</p></div>
+      <div><div class="big">May '28</div><p>Expected graduation — open to ML, systems, and quant roles</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>akhil kagithapu</span>
+    <span><a href="mailto:kagithapu.akhil@gmail.com">kagithapu.akhil@gmail.com</a></span>
+    <span><a href="https://github.com/akh1lk">github/akh1lk</a></span>
+    <span><a href="https://linkedin.com/in/akhil-kagithapu">linkedin</a></span>
+    <span class="push">off-clock: tennis · squash · vfx · very spicy food</span>
+  </footer>
+</div>
+
+<script>
+  // tile grid: 12 x 7, a diagonal wavefront of "live" tiles with a few rotation-applied cells
+  const box = document.getElementById('tiles');
+  const COLS = 12, ROWS = 7;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const i = document.createElement('i');
+      const band = (c + r) % 7;
+      if (band < 3) {
+        i.className = band === 0 ? 'hot' : 'on';
+        i.style.animationDelay = ((c + r) * 0.09).toFixed(2) + 's';
+      }
+      box.appendChild(i);
+    }
+  }
+</script>
+</body>
+</html>
